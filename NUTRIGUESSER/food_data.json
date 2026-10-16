@@ -1,0 +1,209 @@
+{
+  "ingredients": [
+    {
+      "id": 1,
+      "dayNumber": 1,
+      "date": "2026-10-10",
+      "product": "Oreo Original Cookies",
+      "category": "Snacks & Sweets",
+      "unit": "g",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTtLx_5JKFq8qt2T63yj6t85J-LWYgpO9S0BpCSCHvUQ&s=10",
+      "portionText": "Per 100g of product",
+      "funFact": "More than 38% of an Oreo cookie weight comes purely from added sugar!",
+      "components": [
+        { "name": "Sugar", "realValue": 38, "type": "sugar" },
+        { "name": "Carbohydrates / Flour", "realValue": 33, "type": "carbs" },
+        { "name": "Fat / Oils", "realValue": 20, "type": "fat" },
+        { "name": "Cocoa & Fiber", "realValue": 9, "type": "other" }
+      ]
+    },
+    {
+      "id": 2,
+      "dayNumber": 2,
+      "date": "2026-10-11",
+      "product": "Coca-Cola Original",
+      "category": "Beverages",
+      "unit": "ml",
+      "image": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80",
+      "portionText": "Per 100ml of liquid",
+      "funFact": "A standard 354ml can contains over 38ml of pure dissolved sugars!",
+      "components": [
+        { "name": "Water", "realValue": 87, "type": "water" },
+        { "name": "Sugar (HFCS)", "realValue": 11, "type": "sugar" },
+        { "name": "Caramel Color", "realValue": 1, "type": "carbs" },
+        { "name": "Extracts & Flavoring", "realValue": 1, "type": "other" }
+      ]
+    },
+    {
+      "id": 3,
+      "dayNumber": 3,
+      "date": "2026-10-12",
+      "product": "Nutella Hazelnut Spread",
+      "category": "Spreads",
+      "unit": "g",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRceTYwG1w6RRiZgSgJlzcY_QwZLcdrmnzzBYDwC3VdAQ&s=10",
+      "portionText": "Per 100g of product",
+      "funFact": "Over 56% of a jar of Nutella is pure sugar. Hazelnuts account for only 13%!",
+      "components": [
+        { "name": "Sugar", "realValue": 56, "type": "sugar" },
+        { "name": "Palm Oil & Fat", "realValue": 31, "type": "fat" },
+        { "name": "Hazelnuts", "realValue": 12, "type": "other" },
+        { "name": "Cocoa & Milk", "realValue": 1, "type": "other" }
+      ]
+    },
+    {
+      "id": 4,
+      "dayNumber": 4,
+      "date": "2026-10-13",
+      "product": "Doritos Nacho Cheese",
+      "category": "Snacks",
+      "unit": "g",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkSSnLSKLpZxFRbk89OzU4n_lTMb8ow5VibZrSEoLPQQ&s=10",
+      "portionText": "Per 100g of product",
+      "funFact": "Almost 30% of a bag of Doritos consists of vegetable oils used for frying!",
+      "components": [
+        { "name": "Corn & Carbs", "realValue": 53, "type": "carbs" },
+        { "name": "Vegetable Oil & Fat", "realValue": 28, "type": "fat" },
+        { "name": "Cheese & Seasoning", "realValue": 13, "type": "other" },
+        { "name": "Sugar & Salt", "realValue": 6, "type": "sugar" }
+      ]
+    },
+    {
+      "id": 5,
+      "dayNumber": 5,
+      "date": "2026-10-14",
+      "product": "Fresh Avocado",
+      "category": "Produce",
+      "unit": "g",
+      "image": "https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?auto=format&fit=crop&w=600&q=80",
+      "portionText": "Per 100g of raw fruit",
+      "funFact": "Despite its creamy texture, an avocado is actually 73% water by weight!",
+      "components": [
+        { "name": "Water", "realValue": 73, "type": "water" },
+        { "name": "Healthy Fats", "realValue": 15, "type": "fat" },
+        { "name": "Carbs & Fiber", "realValue": 9, "type": "carbs" },
+        { "name": "Protein & Minerals", "realValue": 3, "type": "other" }
+      ]
+    },
+    {
+      "id": 6,
+      "dayNumber": 6,
+      "date": "2026-10-15",
+      "product": "Snickers Candy Bar",
+      "category": "Snacks & Sweets",
+      "unit": "g",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKskCHrx_cOucup9oOTAhfY0YrKWiDzssBsgpo7pCiUA&s=10",
+      "portionText": "Per 100g of product",
+      "funFact": "Exactly half of a Snickers bar weight is pure added sugar!",
+      "components": [
+        { "name": "Sugar", "realValue": 50, "type": "sugar" },
+        { "name": "Fats & Oils", "realValue": 23, "type": "fat" },
+        { "name": "Peanuts", "realValue": 17, "type": "other" },
+        { "name": "Milk & Cocoa Carbs", "realValue": 10, "type": "carbs" }
+      ]
+    },
+    {
+      "id": 7,
+      "dayNumber": 7,
+      "date": "2026-10-16",
+      "product": "McDonald's French Fries",
+      "category": "Fast Food",
+      "unit": "g",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoYNbDKsCGehekDY1VNWhuT1gD3o1kS8PBQNK_5nf54g&s=10",
+      "portionText": "Per 100g of fries",
+      "funFact": "Potatoes contain about 48% water even after being deep fried!",
+      "components": [
+        { "name": "Potato Water", "realValue": 48, "type": "water" },
+        { "name": "Potato Starch / Carbs", "realValue": 35, "type": "carbs" },
+        { "name": "Frying Oil & Fat", "realValue": 15, "type": "fat" },
+        { "name": "Salt & Seasoning", "realValue": 2, "type": "other" }
+      ]
+    }
+  ],
+  "protein": [
+    {
+      "id": 1,
+      "dayNumber": 1,
+      "date": "2026-10-10",
+      "product": "Plain Cooked Chicken Breast",
+      "category": "Poultry & Meat",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZV3anbKimgOl8sRzgWN5flMMawL7RgRSNUkdleIbL8g&s=10",
+      "portionText": "Per 100g of cooked skinless breast",
+      "funFact": "Skinless chicken breast is one of the leanest protein sources, over 80% of its calories come from protein!",
+      "proteinValue": 31,
+      "maxLimit": 100
+    },
+    {
+      "id": 2,
+      "dayNumber": 2,
+      "date": "2026-10-11",
+      "product": "Canned Tuna",
+      "category": "Seafood",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJug1LbKoMmAJeHiA8Np_ggvREva034t5oHizS1MagQg&s=10",
+      "portionText": "Per 1 drained can (120g)",
+      "funFact": "Canned tuna is almost pure protein with virtually zero carbs and less than 1g of fat per serving!",
+      "proteinValue": 30,
+      "maxLimit": 120
+    },
+    {
+      "id": 3,
+      "dayNumber": 3,
+      "date": "2026-10-12",
+      "product": "Greek Yogurt",
+      "category": "Dairy",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5usjANTqSRly_AECXDBsGcg2rHiY1Z1EMq5mPTIUt8g&s=10",
+      "portionText": "Per 1 standard tub (170g)",
+      "funFact": "Greek yogurt is strained multiple times, giving it double the protein density of regular yogurt!",
+      "proteinValue": 17,
+      "maxLimit": 170
+    },
+    {
+      "id": 4,
+      "dayNumber": 4,
+      "date": "2026-10-13",
+      "product": "Whey Protein Powder",
+      "category": "Supplements",
+      "image": "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?auto=format&fit=crop&w=600&q=80",
+      "portionText": "Per 1 scoop (30g)",
+      "funFact": "Whey is absorbed faster by muscles than any other whole food protein source!",
+      "proteinValue": 24,
+      "maxLimit": 30
+    },
+    {
+      "id": 5,
+      "dayNumber": 5,
+      "date": "2026-10-14",
+      "product": "Salmon Fillet",
+      "category": "Seafood",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYHwezbak37JwlXBGvZKRlcBis5habGblc7YRr2gSjVA&s=10",
+      "portionText": "Per 150g fillet",
+      "funFact": "Salmon provides high quality protein packed with essential Omega-3 fatty acids!",
+      "proteinValue": 34,
+      "maxLimit": 150
+    },
+    {
+      "id": 6,
+      "dayNumber": 6,
+      "date": "2026-10-15",
+      "product": "Peanut Butter",
+      "category": "Spreads & Nuts",
+      "image": "https://cdn.shopify.com/s/files/1/1029/7511/files/homemade_peanut_butter_07_1024x1024.png?v=1760592290",
+      "portionText": "Per 2 tablespoons (32g)",
+      "funFact": "Peanut butter is protein-rich, but most of its calories actually come from healthy fats!",
+      "proteinValue": 8,
+      "maxLimit": 32
+    },
+    {
+      "id": 7,
+      "dayNumber": 7,
+      "date": "2026-10-16",
+      "product": "One Egg",
+      "category": "Fresh Produce",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSViwaR9ak_yIK4CdW77L7eg69bVHrzSGjAu3TsIiZqDw&s=10",
+      "portionText": "Per 1 Whole Large Egg (50g)",
+      "funFact": "An egg contains all 9 essential amino acids, making it a complete protein benchmark!",
+      "proteinValue": 6,
+      "maxLimit": 50
+    }
+  ]
+}
