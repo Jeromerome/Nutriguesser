@@ -479,6 +479,36 @@
     }
 
     .percentile-text { font-size: 0.85rem; color: #8b8ea8; margin-bottom: 8px; font-weight: 700; }
+    .percentile-chart {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+      margin: 8px auto 0;
+      overflow: visible;
+      color: #ffb74d;
+    }
+    .percentile-chart .curve-area { fill: rgba(255, 152, 0, 0.12); }
+    .percentile-chart .curve-line { fill: none; stroke: currentColor; stroke-width: 3; }
+    .percentile-chart .axis-line,
+    .percentile-chart .tick-line { stroke: #62667d; stroke-width: 1; }
+    .percentile-chart .tick-label,
+    .percentile-chart .you-label { fill: #a0a3bd; font: 700 10px system-ui, sans-serif; }
+    .percentile-chart .you-label { fill: currentColor; font-size: 11px; font-weight: 900; }
+    .percentile-chart .you-line { stroke: currentColor; stroke-width: 2; stroke-dasharray: 4 3; }
+    .percentile-chart .you-dot { fill: currentColor; stroke: #fff; stroke-width: 2; filter: drop-shadow(0 0 5px currentColor); }
+    .percentile-caption { margin: 2px 0 8px; font-weight: 900; }
+    .share-result-btn {
+      max-width: 260px;
+      margin: 8px auto 0;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, #ffb300, #f57c00);
+      color: #17120a;
+      box-shadow: 0 5px 18px rgba(255, 152, 0, 0.28);
+      font-size: 0.95rem;
+    }
+    .share-result-btn:hover { filter: brightness(1.08); }
+    .share-status { min-height: 1.2em; margin: 6px 0 0; font-size: 0.8rem; font-weight: 800; color: #4caf50; }
     .fun-fact { font-size: 0.88rem; color: #c0c3db; line-height: 1.4; font-style: italic; margin-top: 8px; }
 
     .secondary-btn {
@@ -556,7 +586,8 @@
       text-decoration: none;
     }
 
-    .brand span { color: var(--orange); }
+    .brand-ingredient { color: #f97316; }
+    .brand-guesser { color: #000000; }
     .nav-links { display: flex; align-items: center; gap: clamp(14px, 2vw, 30px); }
 
     .nav-links a,
@@ -627,7 +658,8 @@
       letter-spacing: -0.075em;
     }
 
-    .hero-title span { color: var(--orange); }
+    .guess-text { color: #000000; }
+    .ingredients-text { color: #f97316; }
     .hero-description { max-width: 460px; margin: 0 0 26px; color: var(--muted); font-size: 1.12rem; line-height: 1.65; }
 
     .hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 28px; }
@@ -838,6 +870,10 @@
 
     html[data-theme="dark"] body.screen-shake { background: #301713 !important; }
     html[data-theme="dark"] .site-header { box-shadow: 0 3px 0 rgba(255, 255, 255, 0.08); }
+    html[data-theme="dark"] .brand-ingredient,
+    html[data-theme="dark"] .ingredients-text { color: #3b82f6; }
+    html[data-theme="dark"] .brand-guesser,
+    html[data-theme="dark"] .guess-text { color: #ffffff; }
     html[data-theme="dark"] .play-btn {
       color: #ffffff;
       background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -857,7 +893,10 @@
     html[data-theme="dark"] .play-btn:disabled { color: #b3b8c4; background: #303541; border-color: #727887; box-shadow: none; }
     html[data-theme="dark"] .streak-badge { color: #93c5fd; background: rgba(59, 130, 246, 0.16); border-color: #3b82f6; box-shadow: 3px 3px 0 #05060a; }
     html[data-theme="dark"] .preview-card,
-    html[data-theme="dark"] .content-panel { background: var(--surface); box-shadow: 8px 8px 0 #05060a, 0 0 22px rgba(255, 139, 85, 0.08); }
+    html[data-theme="dark"] .content-panel { background: var(--surface); box-shadow: 8px 8px 0 #05060a, 0 0 22px rgba(59, 130, 246, 0.18); }
+    html[data-theme="dark"] .stats-mode-tab[aria-pressed="true"] {
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.55), 0 0 4px #3b82f6;
+    }
     html[data-theme="dark"] .how-to-play { background: #222638; box-shadow: var(--block-shadow); }
     html[data-theme="dark"] .how-to-play p { color: var(--muted); }
     html[data-theme="dark"] .timer-box { color: var(--muted); background: var(--surface-warm); border-color: var(--ink); }
@@ -922,11 +961,12 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#" onclick="showMenu(); return false;">Ingredient<span>Guesser</span></a>
+    <a class="brand" href="#" onclick="showMenu(); return false;"><span class="brand-ingredient">Ingredient</span> <span class="brand-guesser">Guesser</span></a>
     <nav class="nav-links" aria-label="Main navigation">
       <a href="#how-to-play" onclick="showHowToPlay(); return false;">How to Play</a>
       <a href="#" onclick="startDailyGame(); return false;">Daily</a>
       <a href="#" onclick="showArchive(); return false;">Archive</a>
+      <button class="sound-toggle" id="language-toggle" type="button" onclick="toggleLanguage()" aria-label="Switch language">🌐 EN / ES</button>
       <button class="sound-toggle" id="sound-toggle" type="button" onclick="toggleSound()" aria-pressed="true">🔊 Sound on</button>
       <button class="sound-toggle" id="theme-toggle" type="button" onclick="toggleTheme()" aria-pressed="false">🌙 Dark Mode</button>
     </nav>
@@ -936,31 +976,31 @@
     <section id="menu-screen" class="screen active">
       <div class="hero-layout">
         <div class="hero-copy">
-          <div class="eyebrow">The daily nutrition guessing game</div>
-          <h1 class="hero-title">Guess the <span>ingredients.</span></h1>
-          <p class="hero-description">Can you break down what's inside your favorite foods? Split each product into its ingredients and see how close you get.</p>
+          <div class="eyebrow" data-i18n="heroEyebrow">The daily nutrition guessing game</div>
+          <h1 class="hero-title"><span class="guess-text" data-i18n="heroTitle">Guess the </span><span class="ingredients-text" data-i18n="heroTitleAccent">Ingredients.</span></h1>
+          <p class="hero-description" data-i18n="heroDescription">Can you break down what's inside your favorite foods? Split each product into its ingredients and see how close you get.</p>
           <div class="hero-meta">
-            <div class="streak-badge">🔥 <span id="streak-count">1</span> DAY STREAK</div>
+            <div class="streak-badge">🔥 <span id="streak-count">1</span> <span id="day-streak-label">DAY STREAK</span></div>
             <div class="date-display" id="current-date">TODAY</div>
           </div>
           <div class="hero-actions">
-            <button class="play-btn" onclick="startDailyGame('ingredients')">Play Daily Challenge 🚀</button>
-            <button class="play-btn protein-play-btn" onclick="startDailyGame('protein')">Play Protein Challenge 🥚</button>
-            <button class="archive-btn" onclick="showArchive('ingredients')">Past Days 📂</button>
+            <button class="play-btn" data-i18n="playDaily" onclick="startDailyGame('ingredients')">Play Daily Challenge 🚀</button>
+            <button class="play-btn protein-play-btn" data-i18n="playProtein" onclick="startDailyGame('protein')">Play Protein Challenge 🥚</button>
+            <button class="archive-btn" data-i18n="pastDays" onclick="showArchive('ingredients')">Past Days 📂</button>
             <div class="trophy-action">
-              <button id="trophies-button" class="secondary-btn" type="button" onclick="openTrophies()">🏆 Trophies</button>
+              <button id="trophies-button" class="secondary-btn" type="button" onclick="openTrophies()"><span data-i18n="trophies">🏆 Trophies</span></button>
               <span id="trophy-notification-badge" class="notification-badge" aria-live="polite" hidden></span>
             </div>
           </div>
         </div>
         <div class="preview-card">
-          <img id="hero-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTtLx_5JKFq8qt2T63yj6t85J-LWYgpO9S0BpCSCHvUQ&s=10" class="hero-img" alt="Today's featured food">
+          <img id="hero-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTtLx_5JKFq8qt2T63yj6t85J-LWYgpO9S0BpCSCHvUQ&s=10" class="hero-img" alt="Today's featured food" data-i18n-alt="featuredAlt">
           <div class="preview-info">
-            <div class="eyebrow">Today's featured product</div>
+            <div class="eyebrow" data-i18n="featuredProduct">Today's featured product</div>
             <h2 id="hero-product">Loading daily challenge...</h2>
-            <p id="hero-category">A new food challenge every day</p>
+            <p id="hero-category" data-i18n="newChallenge">A new food challenge every day</p>
             <div class="timer-box">
-              NEXT DAILY PRODUCT UNLOCKS IN:
+              <span data-i18n="nextUnlocks">NEXT DAILY PRODUCT UNLOCKS IN:</span>
               <div class="timer-time" id="countdown-timer">00h 00m 00s</div>
             </div>
           </div>
@@ -970,21 +1010,21 @@
 
     <section id="archive-screen" class="screen">
       <div class="content-panel">
-        <div class="eyebrow">Your daily food challenges</div>
-        <h1 class="screen-heading">Past challenges</h1>
-        <div class="archive-tabs" role="tablist" aria-label="Past challenge mode">
-          <button class="mode-toggle active" id="ingredients-archive-tab" type="button" role="tab" aria-selected="true" onclick="showArchive('ingredients')">🧩 Ingredients Archive</button>
-          <button class="mode-toggle" id="protein-archive-tab" type="button" role="tab" aria-selected="false" onclick="showArchive('protein')">🥚 Protein Archive</button>
+        <div class="eyebrow" data-i18n="archiveEyebrow">Your daily food challenges</div>
+        <h1 class="screen-heading" data-i18n="archiveTitle">Past challenges</h1>
+        <div class="archive-tabs" role="tablist" aria-label="Past challenge mode" data-i18n-aria="pastChallengeMode">
+          <button class="mode-toggle active" id="ingredients-archive-tab" type="button" role="tab" aria-selected="true" onclick="showArchive('ingredients')"><span data-i18n="ingredientsArchive">🧩 Ingredients Archive</span></button>
+          <button class="mode-toggle" id="protein-archive-tab" type="button" role="tab" aria-selected="false" onclick="showArchive('protein')"><span data-i18n="proteinArchive">🥚 Protein Archive</span></button>
         </div>
         <div class="archive-list" id="archive-list"></div>
-        <button class="secondary-btn" onclick="showMenu()">← Back to Main Menu</button>
+        <button class="secondary-btn" data-i18n="backMenu" onclick="showMenu()">← Back to Main Menu</button>
       </div>
     </section>
 
     <section id="game-screen" class="screen">
       <div class="content-panel">
         <div class="food-card">
-          <img id="food-img" class="food-img" src="" alt="Product">
+          <img id="food-img" class="food-img" src="" alt="Product" data-i18n-alt="productAlt">
           <div>
             <div class="eyebrow" id="game-eyebrow">Today's ingredient challenge</div>
             <div class="food-title" id="food-title">Product Name</div>
@@ -993,72 +1033,82 @@
         </div>
 
         <div id="limit-warning">🔒 Total limit reached (100 max)!</div>
-        <div id="protein-instructions" class="protein-instructions" style="display:none;">Guess how many grams of PROTEIN are in this item! 🥚</div>
+        <div id="protein-instructions" class="protein-instructions" style="display:none;" data-i18n="proteinInstructions">Guess how many grams of PROTEIN are in this item! 🥚</div>
 
         <div id="score-summary">
           <div class="score-title" id="score-title">PUZZLE COMPLETED! 🎉</div>
           <div class="score-number" id="final-score-text">0 / 500 PTS</div>
           <div class="rank-badge" id="rank-badge-text">🏆 NUTRITION MASTER</div>
-          <div class="percentile-text" id="percentile-text">Better than 50% of players today!</div>
+          <svg id="percentile-chart" class="percentile-chart" viewBox="0 0 360 150" role="img" aria-label="Score distribution chart">
+            <path class="curve-area" d="M30 108 C78 108 98 35 180 35 C262 35 282 108 330 108 L330 110 L30 110 Z"></path>
+            <path class="curve-line" d="M30 108 C78 108 98 35 180 35 C262 35 282 108 330 108"></path>
+            <g id="percentile-axis"></g>
+            <line id="percentile-marker-line" class="you-line" x1="180" y1="35" x2="180" y2="110"></line>
+            <circle id="percentile-marker-dot" class="you-dot" cx="180" cy="35" r="5"></circle>
+            <text id="percentile-marker-label" class="you-label" x="180" y="22" text-anchor="middle">YOU</text>
+          </svg>
+          <div class="percentile-text percentile-caption" id="percentile-text">Better than 50% of today's players.</div>
+          <button id="share-result-btn" class="play-btn share-result-btn" type="button" onclick="shareResult()">📤 Share Result</button>
+          <div id="share-status" class="share-status" role="status" aria-live="polite"></div>
           <div class="fun-fact" id="fun-fact-text">...</div>
         </div>
 
         <div class="sliders-list" id="sliders-container"></div>
         <div class="protein-attempts" id="protein-attempts" style="display:none;"></div>
-        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Ingredient total" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Ingredient total" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria="ingredientTotal">
           <div id="progress-segments" style="display:flex; width:100%; height:100%;" aria-hidden="true"></div>
           <div class="progress-total" id="progress-total" aria-live="polite">Total: 0 / 100g</div>
         </div>
 
         <button id="submit-btn" class="play-btn" onclick="submitGuess()">SUBMIT GUESS 🚀</button>
         <button id="direct-archive-btn" class="archive-btn" style="display:none;" onclick="showArchive()">PLAY PAST DAYS ➡️</button>
-        <button class="secondary-btn" onclick="showMenu()">← Back to Main Menu</button>
+        <button class="secondary-btn" data-i18n="backMenu" onclick="showMenu()">← Back to Main Menu</button>
       </div>
     </section>
   </main>
   <dialog id="how-to-modal" class="app-modal" aria-labelledby="how-to-title">
     <div class="modal-heading">
-      <h2 id="how-to-title">How to Play</h2>
-      <button class="modal-close" type="button" onclick="closeDialog('how-to-modal')" aria-label="Close help">✕</button>
+      <h2 id="how-to-title" data-i18n="howToPlay">How to Play</h2>
+      <button class="modal-close" type="button" onclick="closeDialog('how-to-modal')" aria-label="Close help" data-i18n-aria="closeHelp">✕</button>
     </div>
-    <div class="help-tabs" role="tablist" aria-label="Game instructions">
-      <button id="help-ingredients-tab" class="help-tab" type="button" role="tab" aria-selected="true" aria-controls="help-ingredients-panel" onclick="selectHelpTab('ingredients')">🧩 How to Play Daily Challenge</button>
-      <button id="help-protein-tab" class="help-tab" type="button" role="tab" aria-selected="false" aria-controls="help-protein-panel" onclick="selectHelpTab('protein')">🥚 How to Play Protein Challenge</button>
+    <div class="help-tabs" role="tablist" aria-label="Game instructions" data-i18n-aria="helpTabs">
+      <button id="help-ingredients-tab" class="help-tab" type="button" role="tab" aria-selected="true" aria-controls="help-ingredients-panel" onclick="selectHelpTab('ingredients')" data-i18n="dailyInstructionsTab">🧩 How to Play Daily Challenge</button>
+      <button id="help-protein-tab" class="help-tab" type="button" role="tab" aria-selected="false" aria-controls="help-protein-panel" onclick="selectHelpTab('protein')" data-i18n="proteinInstructionsTab">🥚 How to Play Protein Challenge</button>
     </div>
     <section id="help-ingredients-panel" class="help-panel" role="tabpanel" aria-labelledby="help-ingredients-tab">
-      <h3>Daily Challenge</h3>
-      <p>Share a total of exactly 100g or 100ml across the four ingredient sliders. Submit when the progress bar reaches the limit. Gold means a perfect match (±1g), green is close (±5g), orange is within ±15g, and red is outside that range.</p>
+      <h3 data-i18n="dailyInstructionsTitle">Daily Challenge</h3>
+      <p data-i18n="dailyInstructions">Share a total of exactly 100g or 100ml across the four ingredient sliders. Submit when the progress bar reaches the limit. Gold means a perfect match (±1g), green is close (±5g), orange is within ±15g, and red is outside that range.</p>
     </section>
     <section id="help-protein-panel" class="help-panel" role="tabpanel" aria-labelledby="help-protein-tab" hidden>
-      <h3>Protein Challenge</h3>
-      <p>In the Protein Challenge, your goal is to guess the exact grams of protein in a specific food portion using up to 3 attempts. In your first two tries, only a Perfect Match (±1g) is accepted—if you miss, the bar turns red and reveals a Higher ▲ or Lower ▼ hint for your next attempt. On your 3rd and final try, landing in the Green range (±5g) is also accepted for partial points.
+      <h3 data-i18n="proteinInstructionsTitle">Protein Challenge</h3>
+      <p data-i18n="proteinInstructionsDescription">In the Protein Challenge, your goal is to guess the exact grams of protein in a specific food portion using up to 3 attempts. In your first two tries, only a Perfect Match (±1g) is accepted—if you miss, the bar turns red and reveals a Higher ▲ or Lower ▼ hint for your next attempt. On your 3rd and final try, landing in the Green range (±5g) is also accepted for partial points.
 
       </p>
     </section>
   </dialog>
   <dialog id="trophies-modal" class="app-modal" aria-labelledby="trophies-title">
     <div class="modal-heading">
-      <h2 id="trophies-title">🏆 Trophies</h2>
-      <button class="modal-close" type="button" onclick="closeDialog('trophies-modal')" aria-label="Close trophies">✕</button>
+      <h2 id="trophies-title" data-i18n="trophies">🏆 Trophies</h2>
+      <button class="modal-close" type="button" onclick="closeDialog('trophies-modal')" aria-label="Close trophies" data-i18n-aria="closeTrophies">✕</button>
     </div>
-    <div class="trophy-tabs" role="tablist" aria-label="Trophies and statistics">
-      <button id="trophies-tab" class="trophy-tab" type="button" role="tab" aria-selected="true" aria-controls="trophies-panel" onclick="selectTrophyView('trophies')">🏆 Trophies</button>
-      <button id="statistics-tab" class="trophy-tab" type="button" role="tab" aria-selected="false" aria-controls="statistics-panel" onclick="selectTrophyView('statistics')">📊 Statistics</button>
+    <div class="trophy-tabs" role="tablist" aria-label="Trophies and statistics" data-i18n-aria="trophyTabs">
+      <button id="trophies-tab" class="trophy-tab" type="button" role="tab" aria-selected="true" aria-controls="trophies-panel" onclick="selectTrophyView('trophies')" data-i18n="trophies">🏆 Trophies</button>
+      <button id="statistics-tab" class="trophy-tab" type="button" role="tab" aria-selected="false" aria-controls="statistics-panel" onclick="selectTrophyView('statistics')" data-i18n="statistics">📊 Statistics</button>
     </div>
     <section id="trophies-panel" role="tabpanel" aria-labelledby="trophies-tab">
-      <div id="trophy-progress" class="trophy-progress" aria-live="polite">UNLOCKED: 0 / 11</div>
+      <div id="trophy-progress" class="trophy-progress" aria-live="polite">UNLOCKED: 0 / 13</div>
       <div id="trophy-grid" class="trophy-grid"></div>
     </section>
     <section id="statistics-panel" role="tabpanel" aria-labelledby="statistics-tab" hidden>
-      <div class="stats-mode-tabs" role="group" aria-label="Statistics mode">
-        <button id="ingredients-stats-tab" class="stats-mode-tab" type="button" aria-pressed="true" onclick="selectStatsMode('ingredients')">🧩 Ingredients Mode</button>
-        <button id="protein-stats-tab" class="stats-mode-tab" type="button" aria-pressed="false" onclick="selectStatsMode('protein')">🥚 Protein Mode</button>
+      <div class="stats-mode-tabs" role="group" aria-label="Statistics mode" data-i18n-aria="statisticsMode">
+        <button id="ingredients-stats-tab" class="stats-mode-tab" type="button" aria-pressed="true" onclick="selectStatsMode('ingredients')" data-i18n="ingredientsMode">🧩 Ingredients Mode</button>
+        <button id="protein-stats-tab" class="stats-mode-tab" type="button" aria-pressed="false" onclick="selectStatsMode('protein')" data-i18n="proteinMode">🥚 Protein Mode</button>
       </div>
       <div id="stats-grid" class="stats-grid"></div>
     </section>
   </dialog>
   <div id="trophy-toast-container" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
-  <footer class="created-by">Created by <span>Jerome</span></footer>
+  <footer class="created-by"><span data-i18n="createdBy">Created by</span> <span>Jerome</span></footer>
 
   <script>
     // ----------------------------------------------------
@@ -1137,6 +1187,10 @@
       playNotes([523.25, 659.25, 783.99, 1046.5], 0.08);
     }
 
+    function playAchievementSound() {
+      playNotes([783.99, 1046.5, 1318.51], 0.07);
+    }
+
     function triggerStarShower() {
       confetti({
         particleCount: 40,
@@ -1154,16 +1208,14 @@
 
     function toggleSound() {
       soundEnabled = !soundEnabled;
-      const button = document.getElementById('sound-toggle');
-      button.innerText = soundEnabled ? '🔊 Sound on' : '🔇 Sound off';
-      button.setAttribute('aria-pressed', String(soundEnabled));
+      updateSoundToggle();
     }
 
     function applyTheme(theme) {
       const darkMode = theme === 'dark';
       document.documentElement.dataset.theme = darkMode ? 'dark' : 'light';
       const button = document.getElementById('theme-toggle');
-      button.innerText = darkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+      button.innerText = darkMode ? t('themeLight') : t('themeDark');
       button.setAttribute('aria-pressed', String(darkMode));
     }
 
@@ -1176,6 +1228,7 @@
     // ----------------------------------------------------
     // LÓGICA PRINCIPAL
     // ----------------------------------------------------
+    const START_DATE = new Date(Date.UTC(2026, 9, 15));
     let foodCatalogs = { ingredients: [], protein: [] };
     let currentFood = {};
     let gameMode = 'ingredients';
@@ -1183,6 +1236,12 @@
     let proteinAttemptCount = 0;
     let gameGeneration = 0;
     let currentIsDaily = false;
+    let resultEmojis = [];
+    let currentRankKey = '';
+    let currentTranslatedFood = {};
+    let featuredTranslationGeneration = 0;
+    let archiveTranslationGeneration = 0;
+    let chartAnimationGeneration = 0;
     let lastWarningTime = 0;
     const trophyDefinitions = [
       { id: 'perfect-balance', icon: '⚖️', name: 'Perfect Balance', description: 'Get within ±1g on any ingredient.' },
@@ -1195,13 +1254,159 @@
       { id: 'clutch-finisher', icon: '🧗', name: 'Clutch Finisher', description: 'Get a perfect match on attempt 3.' },
       { id: 'protein-god', icon: '🐐', name: 'Protein God', description: 'Score 500 points in Protein Mode.' },
       { id: 'time-traveler', icon: '⏳', name: 'Time Traveler', description: 'Complete five distinct days from the archive.' },
-      { id: 'streak-master', icon: '🔥', name: 'Streak Master', description: 'Complete daily challenges 3 days in a row.' }
+      { id: 'streak-master-i', icon: '🔥', name: 'Streak Master I', description: 'Reach a 5-day streak.' },
+      { id: 'streak-master-ii', icon: '🔥', name: 'Streak Master II', description: 'Reach a 10-day streak.' },
+      { id: 'streak-master-iii', icon: '🔥', name: 'Streak Master III', description: 'Reach a 50-day streak.' }
     ];
     let trophyCounts = {};
     let seenTrophyIds = [];
     let archiveDaysCompleted = [];
     let userStatistics = { ingredients: { perfect: 0, great: 0, close: 0, miss: 0 }, protein: { perfect: 0, great: 0, close: 0, miss: 0 } };
     let statsMode = 'ingredients';
+    const translations = {
+      en: {
+        pageTitle: 'IngredientGuesser - Daily Food Game', featuredAlt: "Today's featured food",
+        productAlt: 'Product', ingredientTotal: 'Ingredient total',
+        pastChallengeMode: 'Past challenge mode', helpTabs: 'Game instructions',
+        trophyTabs: 'Trophies and statistics',
+        heroEyebrow: 'The daily nutrition guessing game', heroTitle: 'Guess the ', heroTitleAccent: 'Ingredients.',
+        heroDescription: "Can you break down what's inside your favorite foods? Split each product into its ingredients and see how close you get.",
+        dayStreak: count => count === 1 ? 'DAY STREAK' : 'DAY STREAK', playDaily: 'Play Daily Challenge 🚀', playProtein: 'Play Protein Challenge 🥚',
+        pastDays: 'Past Days 📂', playPastDays: 'PLAY PAST DAYS ➡️', trophies: '🏆 Trophies', featuredProduct: "Today's featured product",
+        newChallenge: 'A new food challenge every day', loadingChallenge: 'Loading daily challenge...',
+        nextUnlocks: 'NEXT DAILY PRODUCT UNLOCKS IN:', navMain: 'Main navigation',
+        navHowTo: 'How to Play', navDaily: 'Daily', navArchive: 'Archive', soundOn: '🔊 Sound on',
+        soundOff: '🔇 Sound off', themeDark: '🌙 Dark Mode', themeLight: '☀️ Light Mode',
+        switchLanguage: 'Switch language to Spanish', trophyAria: count => count > 0 ? `Trophies, ${count} new` : 'Trophies', archiveEyebrow: 'Your daily food challenges',
+        archiveTitle: 'Past challenges', ingredientsArchive: '🧩 Ingredients Archive',
+        proteinArchive: '🥚 Protein Archive', backMenu: '← Back to Main Menu',
+        proteinInstructions: 'Guess how many grams of PROTEIN are in this item! 🥚',
+        dailyChallenge: "Today's ingredient challenge", proteinChallenge: 'Protein challenge',
+        limitWarning: unit => `🔒 Total limit reached (100 ${unit} max)!`,
+        submitGuess: 'SUBMIT GUESS 🚀', submitAttempt: attempt => `SUBMIT ATTEMPT ${attempt} OF 3 🥚`,
+        proteinAttempt: attempt => `Protein · Attempt ${attempt} of 3`,
+        reachLimit: (unit, missing) => `REACH 100${unit} TO SUBMIT (${missing}${unit} needed)`,
+        total: (value, unit) => `Total: ${value} / 100${unit}`,
+        real: (value, unit) => `Real: ${value}${unit}`,
+        realPoints: (color, value, unit, points) => `${color} Real: ${value}${unit} (+${points} PTS)`,
+        perfectMatch: (value, unit, points) => `✨ PERFECT MATCH! Real: ${value}${unit} (+${points} PTS)`,
+        closeEnough: (value, unit, points) => `🟢 Close enough! Real: ${value}${unit} (+${points} PTS)`,
+        incorrectProtein: value => `🟥 No match. Real protein: ${value}g`,
+        higherHint: '▲ HIGHER! (The real value is higher)', lowerHint: '▼ LOWER! (The real value is lower)',
+        tryNext: '🟥 Not quite — try the next slider!', realProtein: value => `🟥 No match. Real protein: ${value}g`,
+        puzzleComplete: 'PUZZLE COMPLETED! 🎉', proteinComplete: 'PROTEIN CHALLENGE COMPLETE! 🥚',
+        proteinOver: 'PROTEIN CHALLENGE OVER', points: value => `${value} / 500 PTS`,
+        percentile: value => `Better than ${value}% of today's players.`,
+        shareTitle: (mode, day) => `${mode === 'protein' ? '🥚' : '🧩'} NutriGuesser #${day}`,
+        score: 'Score', sharePercentile: value => `Better than ${value}% of today's players! 📈`,
+        playNow: 'Play now: https://nutriguesser.vercel.app', shareResult: '📤 Share Result',
+        copied: 'Copied to clipboard! 📋', copyFailed: 'Could not copy result. Please try again.',
+        funFact: value => `💡 Fun Fact: ${value}`, day: value => `DAY ${value}`,
+        dayLabel: value => `Day #${value}`, pastDay: 'Past Day', play: 'PLAY ➔',
+        closeHelp: 'Close help', howToPlay: 'How to Play', dailyInstructionsTab: '🧩 How to Play Daily Challenge',
+        proteinInstructionsTab: '🥚 How to Play Protein Challenge', dailyInstructionsTitle: 'Daily Challenge',
+        dailyInstructions: 'Share a total of exactly 100g or 100ml across the four ingredient sliders. Submit when the progress bar reaches the limit. Gold means a perfect match (±1g), green is close (±5g), orange is within ±15g, and red is outside that range.',
+        proteinInstructionsTitle: 'Protein Challenge',
+        proteinInstructionsDescription: 'In the Protein Challenge, your goal is to guess the exact grams of protein in a specific food portion using up to 3 attempts. In your first two tries, only a Perfect Match (±1g) is accepted—if you miss, the bar turns red and reveals a Higher ▲ or Lower ▼ hint for your next attempt. On your 3rd and final try, landing in the Green range (±5g) is also accepted for partial points.',
+        closeTrophies: 'Close trophies', statistics: '📊 Statistics', statisticsMode: 'Statistics mode',
+        ingredientsMode: '🧩 Ingredients Mode', proteinMode: '🥚 Protein Mode',
+        unlocked: (n, total) => `UNLOCKED: ${n} / ${total}`, trophyUnlocked: '🏆 TROPHY UNLOCKED!',
+        perfectLabel: '✨ PERFECT', greatLabel: '🟢 GREAT', closeLabel: '🟡 CLOSE', missLabel: '🔴 MISS',
+        perfectDescription: 'Gold / ±1g', greatDescription: 'Green / ±5g', closeDescription: 'Yellow-Orange / ±15g', missDescription: '>15g',
+        copiedAria: 'Copied share result', scoreDistribution: score => `Score distribution from 0 to 500 points. Your score: ${score}.`,
+        you: 'YOU', categorySeparator: ' · ', onAttempt: (result, attempt) => `${result} on attempt ${attempt}.`,
+        allAttemptsUsed: value => `All 3 attempts used — the exact answer is ${value}g.`,
+        resultCloseGuess: 'Close guess', resultPerfectMatch: 'Perfect match',
+        realPointsNoScore: (color, value, unit) => `${color} Real: ${value}${unit} (0 PTS)`,
+        rankHealthyLegend: '👑 MEGA NUTRITION LEGEND', rankMacroWizard: '💎 MACRO WIZARD',
+        rankNutritionMaster: '🏅 NUTRITION MASTER', rankHealthyExpert: '🍉 HEALTHY EXPERT',
+        rankDietitian: '🥦 DIETITIAN APPRENTICE', rankStudent: '🥑 NUTRITION STUDENT',
+        rankBalanced: '🥗 BALANCED NIBBLER', rankCasual: '🍕 CASUAL EATER',
+        rankSnack: '🌭 SNACK AMATEUR', rankFastFood: '🍟 FAST FOOD JUNKIE',
+        rankUltraProcessed: '🍩 ULTRA PROCESSED FANATIC', rankProteinGod: '👑 PROTEIN GOD',
+        rankEliteProtein: '💪 ELITE PROTEIN PRO', rankProteinLegend: '🏆 PROTEIN LEGEND',
+        rankGymBro: '🏋️ GYM BRO', rankProteinAthlete: '💪 PROTEIN ATHLETE',
+        rankProteinPro: '🥚 PROTEIN PRO', rankFitnessBeginner: '🐣 FITNESS BEGINNER',
+        rankFitTraining: '⚡ FIT IN TRAINING', rankProteinRookie: '🌱 PROTEIN ROOKIE',
+        rankLowProtein: '🥴 LOW PROTEIN ENERGY', rankCatabolic: '🍩 CATABOLIC DISASTER',
+        trophyNames: ['Perfect Balance', 'Healthy Expert', 'Master Nutritionist', 'Almost Perfect', 'Comeback', 'First Shake', 'Gym Bro', 'Clutch Finisher', 'Protein God', 'Time Traveler', 'Streak Master I', 'Streak Master II', 'Streak Master III'],
+        trophyDescriptions: ['Get within ±1g on any ingredient.', 'Score more than 400 points in Ingredients Mode.', 'Score 500 points in Ingredients Mode.', 'Get three gold ingredients and one in another color.', 'Get Red → Yellow → Green → Gold in that exact order.', 'Complete a Protein Challenge.', 'Get a perfect match on attempt 2.', 'Get a perfect match on attempt 3.', 'Score 500 points in Protein Mode.', 'Complete five distinct days from the archive.', 'Reach a 5-day streak.', 'Reach a 10-day streak.', 'Reach a 50-day streak.'],
+        statCategories: ['✨ PERFECT', '🟢 GREAT', '🟡 CLOSE', '🔴 MISS'],
+        streakWins: 'DAY STREAK', today: 'TODAY', createdBy: 'Created by'
+      },
+      es: {
+        pageTitle: 'IngredientGuesser - Juego diario de comida', featuredAlt: 'Comida destacada de hoy',
+        productAlt: 'Producto', ingredientTotal: 'Total de ingredientes',
+        pastChallengeMode: 'Modo de retos anteriores', helpTabs: 'Instrucciones del juego',
+        trophyTabs: 'Trofeos y estadísticas',
+        heroEyebrow: 'El juego diario para adivinar la nutrición', heroTitle: 'Adivina los ', heroTitleAccent: 'ingredientes.',
+        heroDescription: '¿Puedes descubrir qué contienen tus comidas favoritas? Separa cada producto en sus ingredientes y comprueba qué tan cerca estás.',
+        dayStreak: count => count === 1 ? 'DÍA DE RACHA' : 'DÍAS DE RACHA', playDaily: 'Jugar reto diario 🚀', playProtein: 'Jugar reto de proteínas 🥚',
+        pastDays: 'Días anteriores 📂', playPastDays: 'JUGAR DÍAS ANTERIORES ➡️', trophies: '🏆 Trofeos', featuredProduct: 'El producto destacado de hoy',
+        newChallenge: 'Un nuevo reto de comida cada día', loadingChallenge: 'Cargando reto diario...',
+        nextUnlocks: 'EL PRÓXIMO PRODUCTO SE DESBLOQUEA EN:', navMain: 'Navegación principal',
+        navHowTo: 'Cómo jugar', navDaily: 'Diario', navArchive: 'Archivo', soundOn: '🔊 Sonido activado',
+        soundOff: '🔇 Sonido desactivado', themeDark: '🌙 Modo oscuro', themeLight: '☀️ Modo claro',
+        switchLanguage: 'Cambiar idioma a inglés', trophyAria: count => count > 0 ? `Trofeos, ${count} nuevos` : 'Trofeos', archiveEyebrow: 'Tus retos diarios de comida',
+        archiveTitle: 'Retos anteriores', ingredientsArchive: '🧩 Archivo de ingredientes',
+        proteinArchive: '🥚 Archivo de proteínas', backMenu: '← Volver al menú principal',
+        proteinInstructions: '¡Adivina cuántos gramos de PROTEÍNA hay en este alimento! 🥚',
+        dailyChallenge: 'Reto de ingredientes de hoy', proteinChallenge: 'Reto de proteínas',
+        limitWarning: unit => `🔒 ¡Límite total alcanzado (máximo 100 ${unit})!`,
+        submitGuess: 'ENVIAR RESPUESTA 🚀', submitAttempt: attempt => `ENVIAR INTENTO ${attempt} DE 3 🥚`,
+        proteinAttempt: attempt => `Proteína · Intento ${attempt} de 3`,
+        reachLimit: (unit, missing) => `LLEGA A 100${unit} PARA ENVIAR (faltan ${missing}${unit})`,
+        total: (value, unit) => `Total: ${value} / 100${unit}`,
+        real: (value, unit) => `Real: ${value}${unit}`,
+        realPoints: (color, value, unit, points) => `${color} Real: ${value}${unit} (+${points} PTS)`,
+        perfectMatch: (value, unit, points) => `✨ ¡ACIERTO PERFECTO! Real: ${value}${unit} (+${points} PTS)`,
+        closeEnough: (value, unit, points) => `🟢 ¡Muy cerca! Real: ${value}${unit} (+${points} PTS)`,
+        incorrectProtein: value => `🟥 Sin acierto. Proteína real: ${value}g`,
+        higherHint: '▲ ¡MÁS! (El valor real es mayor)', lowerHint: '▼ ¡MENOS! (El valor real es menor)',
+        tryNext: '🟥 No es correcto; ¡prueba el siguiente control!', realProtein: value => `🟥 Sin acierto. Proteína real: ${value}g`,
+        puzzleComplete: '¡RETO COMPLETADO! 🎉', proteinComplete: '¡RETO DE PROTEÍNAS COMPLETADO! 🥚',
+        proteinOver: 'FIN DEL RETO DE PROTEÍNAS', points: value => `${value} / 500 PTS`,
+        percentile: value => `¡Mejor que el ${value}% de los jugadores de hoy!`,
+        shareTitle: (mode, day) => `${mode === 'protein' ? '🥚' : '🧩'} NutriGuesser #${day}`,
+        score: 'Puntuación', sharePercentile: value => `¡Mejor que el ${value}% de los jugadores de hoy! 📈`,
+        playNow: 'Juega ahora: https://nutriguesser.vercel.app', shareResult: '📤 Compartir resultado',
+        copied: '¡Copiado al portapapeles! 📋', copyFailed: 'No se pudo copiar el resultado. Inténtalo de nuevo.',
+        funFact: value => `💡 Dato curioso: ${value}`, day: value => `DÍA ${value}`,
+        dayLabel: value => `Día n.º ${value}`, pastDay: 'Día anterior', play: 'JUGAR ➔',
+        closeHelp: 'Cerrar ayuda', howToPlay: 'Cómo jugar', dailyInstructionsTab: '🧩 Cómo jugar al reto diario',
+        proteinInstructionsTab: '🥚 Cómo jugar al reto de proteínas', dailyInstructionsTitle: 'Reto diario',
+        dailyInstructions: 'Reparte exactamente 100 g o 100 ml entre los cuatro controles de ingredientes. Envía cuando la barra de progreso llegue al límite. Dorado significa acierto perfecto (±1 g), verde es aproximado (±5 g), naranja está dentro de ±15 g y rojo queda fuera de ese rango.',
+        proteinInstructionsTitle: 'Reto de proteínas',
+        proteinInstructionsDescription: 'En el reto de proteínas, debes adivinar los gramos exactos de proteína de una porción de comida con hasta 3 intentos. En los dos primeros, solo cuenta un acierto perfecto (±1 g); si fallas, la barra se pone roja y muestra una pista de más ▲ o menos ▼ para el siguiente intento. En el tercer y último intento, el rango verde (±5 g) también otorga puntos parciales.',
+        closeTrophies: 'Cerrar trofeos', statistics: '📊 Estadísticas', statisticsMode: 'Modo de estadísticas',
+        ingredientsMode: '🧩 Modo ingredientes', proteinMode: '🥚 Modo proteínas',
+        unlocked: (n, total) => `DESBLOQUEADOS: ${n} / ${total}`, trophyUnlocked: '🏆 ¡TROFEO DESBLOQUEADO!',
+        perfectLabel: '✨ PERFECTO', greatLabel: '🟢 GENIAL', closeLabel: '🟡 CERCA', missLabel: '🔴 FALLO',
+        perfectDescription: 'Dorado / ±1 g', greatDescription: 'Verde / ±5 g', closeDescription: 'Amarillo-naranja / ±15 g', missDescription: '>15 g',
+        copiedAria: 'Resultado copiado', scoreDistribution: score => `Distribución de puntuaciones de 0 a 500. Tu puntuación: ${score}.`,
+        you: 'TÚ', categorySeparator: ' · ', onAttempt: (result, attempt) => `${result} en el intento ${attempt}.`,
+        allAttemptsUsed: value => `Usaste los 3 intentos; la respuesta exacta es ${value}g.`,
+        resultCloseGuess: 'Adivinanza cercana', resultPerfectMatch: 'Acierto perfecto',
+        realPointsNoScore: (color, value, unit) => `${color} Real: ${value}${unit} (0 PTS)`,
+        rankHealthyLegend: '👑 LEYENDA DE LA NUTRICIÓN', rankMacroWizard: '💎 MAGO DE LOS MACROS',
+        rankNutritionMaster: '🏅 MAESTRO DE LA NUTRICIÓN', rankHealthyExpert: '🍉 EXPERTO EN NUTRICIÓN',
+        rankDietitian: '🥦 APRENDIZ DE DIETISTA', rankStudent: '🥑 ESTUDIANTE DE NUTRICIÓN',
+        rankBalanced: '🥗 COMEDOR EQUILIBRADO', rankCasual: '🍕 COMEDOR OCASIONAL',
+        rankSnack: '🌭 AFICIONADO A LOS SNACKS', rankFastFood: '🍟 AMANTE DE LA COMIDA RÁPIDA',
+        rankUltraProcessed: '🍩 FAN DE LOS ULTRAPROCESADOS', rankProteinGod: '👑 DIOS DE LAS PROTEÍNAS',
+        rankEliteProtein: '💪 PRO DE LAS PROTEÍNAS', rankProteinLegend: '🏆 LEYENDA DE LAS PROTEÍNAS',
+        rankGymBro: '🏋️ GIMNASIO A TOPE', rankProteinAthlete: '💪 ATLETA DE LAS PROTEÍNAS',
+        rankProteinPro: '🥚 PRO DE LAS PROTEÍNAS', rankFitnessBeginner: '🐣 PRINCIPIANTE DEL FITNESS',
+        rankFitTraining: '⚡ EN ENTRENAMIENTO', rankProteinRookie: '🌱 NOVATO DE LAS PROTEÍNAS',
+        rankLowProtein: '🥴 ENERGÍA BAJA EN PROTEÍNAS', rankCatabolic: '🍩 DESASTRE CATABÓLICO',
+        trophyNames: ['Equilibrio perfecto', 'Experto saludable', 'Maestro de nutrición', 'Casi perfecto', 'Remontada', 'Primer batido', 'Gimnasio a tope', 'Rematador decisivo', 'Dios de las proteínas', 'Viajero del tiempo', 'Maestro de racha I', 'Maestro de racha II', 'Maestro de racha III'],
+        trophyDescriptions: ['Acierta cualquier ingrediente con un margen de ±1 g.', 'Supera los 400 puntos en el modo ingredientes.', 'Consigue 500 puntos en el modo ingredientes.', 'Consigue tres ingredientes dorados y uno de otro color.', 'Obtén rojo → amarillo → verde → dorado, en ese orden.', 'Completa un reto de proteínas.', 'Acierta perfectamente en el segundo intento.', 'Acierta perfectamente en el tercer intento.', 'Consigue 500 puntos en el modo proteínas.', 'Completa cinco días distintos del archivo.', 'Alcanza una racha de 5 días.', 'Alcanza una racha de 10 días.', 'Alcanza una racha de 50 días.'],
+        statCategories: ['✨ PERFECTO', '🟢 GENIAL', '🟡 CERCA', '🔴 FALLO'],
+        streakWins: 'DÍAS SEGUIDOS', today: 'HOY', createdBy: 'Creado por'
+      }
+    };
+    let currentLanguage = localStorage.getItem('user_language') === 'es' ? 'es' : 'en';
+    const translationCache = new Map();
 
     function readStoredJSON(key, fallback) {
       const saved = localStorage.getItem(key);
@@ -1211,6 +1416,222 @@
       } catch (error) {
         console.error(`Invalid JSON in localStorage key "${key}"`, error);
         return fallback;
+      }
+    }
+
+    function t(key, ...args) {
+      const value = translations[currentLanguage][key] ?? translations.en[key];
+      return typeof value === 'function' ? value(...args) : value;
+    }
+
+    function applyTranslations() {
+      document.documentElement.lang = currentLanguage;
+      document.title = t('pageTitle');
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll('[data-i18n-aria]').forEach(element => {
+        element.setAttribute('aria-label', t(element.dataset.i18nAria));
+      });
+      document.querySelectorAll('[data-i18n-alt]').forEach(element => {
+        element.setAttribute('alt', t(element.dataset.i18nAlt));
+      });
+      document.querySelector('nav.nav-links').setAttribute('aria-label', t('navMain'));
+      const navLinks = document.querySelectorAll('.nav-links a');
+      navLinks[0].textContent = t('navHowTo');
+      navLinks[1].textContent = t('navDaily');
+      navLinks[2].textContent = t('navArchive');
+      document.getElementById('language-toggle').setAttribute('aria-label', t('switchLanguage'));
+      document.getElementById('share-result-btn').innerText = t('shareResult');
+      document.getElementById('direct-archive-btn').innerText = t('playPastDays');
+      const shareStatus = document.getElementById('share-status');
+      if (shareStatus.innerText === translations.en.copied || shareStatus.innerText === translations.es.copied) {
+        shareStatus.innerText = t('copied');
+      } else if (shareStatus.innerText === translations.en.copyFailed || shareStatus.innerText === translations.es.copyFailed) {
+        shareStatus.innerText = t('copyFailed');
+      }
+      updateStreakBadge();
+      updateSoundToggle();
+      applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+      updateCurrentDate();
+      updateTrophyBadge();
+      renderTrophies();
+      renderStatistics();
+      if (foodCatalogs.ingredients.length) {
+        const featured = getFoodForDay('ingredients', getCurrentDayNumber());
+        if (featured) renderFeaturedFood(featured);
+      }
+      if (document.getElementById('archive-screen').classList.contains('active')) {
+        showArchive(archiveMode);
+      }
+      if (currentFood.product) translateCurrentFood(gameGeneration);
+      if (document.getElementById('game-screen').classList.contains('active')) refreshGameplayText();
+      if (document.getElementById('score-summary').style.display === 'flex') {
+        const score = Number.parseInt(document.getElementById('final-score-text').innerText, 10) || 0;
+        showResultSummary(score, resultEmojis, false);
+        document.getElementById('score-title').innerText = gameMode === 'protein'
+          ? (score > 0 ? t('proteinComplete') : t('proteinOver'))
+          : t('puzzleComplete');
+        document.getElementById('rank-badge-text').innerText = currentRankKey ? t(currentRankKey) : document.getElementById('rank-badge-text').innerText;
+        document.getElementById('fun-fact-text').innerText = t('funFact', currentTranslatedFood.funFact || currentFood.funFact || '');
+      } else if (document.getElementById('game-screen').classList.contains('active')) {
+        document.getElementById('game-eyebrow').innerText = `${t('day', currentFood.dayNumber)} · ${gameMode === 'protein' ? t('proteinChallenge') : t('dailyChallenge')}`;
+        document.getElementById('protein-instructions').innerText = t('proteinInstructions');
+        document.getElementById('limit-warning').innerText = t('limitWarning', currentFood.unit || 'g');
+        if (gameMode === 'protein') updateProteinSubmit();
+        else validateTotalSubmit();
+      }
+    }
+
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+      localStorage.setItem('user_language', currentLanguage);
+      applyTranslations();
+    }
+
+    function updateSoundToggle() {
+      const button = document.getElementById('sound-toggle');
+      button.innerText = soundEnabled ? t('soundOn') : t('soundOff');
+      button.setAttribute('aria-pressed', String(soundEnabled));
+    }
+
+    function updateCurrentDate() {
+      const today = new Date();
+      const locale = currentLanguage === 'es' ? 'es-ES' : 'en-US';
+      document.getElementById('current-date').innerText =
+        `${t('day', getCurrentDayNumber())} · ${today.toLocaleDateString(locale, { month: 'short', day: 'numeric' }).toUpperCase()}`;
+    }
+
+    function updateStreakBadge() {
+      const streak = Number(document.getElementById('streak-count').innerText) || 1;
+      document.getElementById('day-streak-label').innerText = t('dayStreak', streak);
+    }
+
+    function refreshGameplayText() {
+      if (gameMode === 'ingredients') {
+        (currentFood.components || []).forEach((component, index) => {
+          const feedback = document.getElementById(`real-val-${index}`);
+          if (!feedback || feedback.style.display === 'none') return;
+          const value = Math.ceil(component.realValue);
+          const unit = currentFood.unit || 'g';
+          const box = document.getElementById(`comp-box-${index}`);
+          feedback.innerText = box.classList.contains('gold')
+            ? t('perfectMatch', value, unit, 125)
+            : box.classList.contains('green')
+              ? t('realPoints', '🟢', value, unit, 100)
+              : box.classList.contains('orange-yellow')
+                ? t('realPoints', '🟧', value, unit, 50)
+                : t('realPointsNoScore', '🟥', value, unit);
+        });
+        return;
+      }
+
+      const proteinValue = Number(currentFood.proteinValue);
+      document.querySelectorAll('.protein-attempt-box').forEach((box, index) => {
+        const attempt = index + 1;
+        const label = box.querySelector('.comp-header span:first-child');
+        const feedback = document.getElementById(`protein-feedback-${attempt}`);
+        label.textContent = t('proteinAttempt', attempt);
+        if (!feedback || feedback.style.display === 'none') return;
+        if (box.classList.contains('gold')) {
+          feedback.textContent = t('perfectMatch', proteinValue, 'g', [500, 350, 200][attempt - 1]);
+        } else if (box.classList.contains('green')) {
+          feedback.textContent = t('closeEnough', proteinValue, 'g', 100);
+        } else if (box.classList.contains('red') && attempt < proteinAttemptCount) {
+          const guess = Number(document.getElementById(`protein-slider-${attempt}`).value);
+          const hint = guess < proteinValue ? t('higherHint') : t('lowerHint');
+          feedback.innerHTML = `${t('tryNext')}<span class="protein-hint">${hint}</span>`;
+        } else if (box.classList.contains('red')) {
+          feedback.textContent = t('realProtein', proteinValue);
+        }
+      });
+    }
+
+    function loadTranslationCache() {
+      const saved = readStoredJSON('translation_cache_es', {});
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return;
+      Object.entries(saved).forEach(([source, translated]) => {
+        if (typeof translated === 'string') translationCache.set(source, translated);
+      });
+    }
+
+    async function getTranslatedText(text, targetLang) {
+      if (targetLang !== 'es' || !text) return text;
+      if (translationCache.has(text)) return translationCache.get(text);
+      try {
+        const params = new URLSearchParams({ client: 'gtx', sl: 'en', tl: targetLang, dt: 't', q: text });
+        const response = await fetch(`https://translate.googleapis.com/translate_a/single?${params}`);
+        if (!response.ok) throw new Error(`Translation API returned ${response.status}`);
+        const data = await response.json();
+        const translated = data[0].map(part => part[0]).join('');
+        if (!translated) throw new Error('Translation API returned an empty translation');
+        translationCache.set(text, translated);
+        try {
+          localStorage.setItem('translation_cache_es', JSON.stringify(Object.fromEntries(translationCache)));
+        } catch (error) {
+          console.error('Unable to save translations to localStorage', error);
+        }
+        return translated;
+      } catch (error) {
+        console.error(`Unable to translate text to ${targetLang}`, error);
+        return text;
+      }
+    }
+
+    async function translateFoodFields(food) {
+      const targetLanguage = currentLanguage;
+      if (targetLanguage !== 'es') return { ...food };
+      const [product, category, portionText, funFact, ...componentNames] = await Promise.all([
+        food.product,
+        food.category,
+        food.portionText,
+        food.funFact,
+        ...(food.components || []).map(component => component.name)
+      ].map(text => getTranslatedText(text, targetLanguage)));
+      return {
+        ...food,
+        product,
+        category,
+        portionText,
+        funFact,
+        components: (food.components || []).map((component, index) => ({
+          ...component,
+          name: componentNames[index]
+        }))
+      };
+    }
+
+    async function translateFoodPreview(food, includePortion = false) {
+      const [product, category, portionText] = await Promise.all([
+        getTranslatedText(food.product, currentLanguage),
+        getTranslatedText(food.category, currentLanguage),
+        includePortion ? getTranslatedText(food.portionText, currentLanguage) : food.portionText
+      ]);
+      return { product, category, portionText };
+    }
+
+    async function renderFeaturedFood(food) {
+      const generation = ++featuredTranslationGeneration;
+      const language = currentLanguage;
+      const translated = await translateFoodPreview(food, true);
+      if (generation !== featuredTranslationGeneration || language !== currentLanguage) return;
+      document.getElementById('hero-product').innerText = translated.product;
+      document.getElementById('hero-category').innerText = `${translated.category}${t('categorySeparator')}${translated.portionText}`;
+    }
+
+    async function translateCurrentFood(generation) {
+      const language = currentLanguage;
+      const translated = await translateFoodFields(currentFood);
+      if (generation !== gameGeneration || language !== currentLanguage) return;
+      currentTranslatedFood = translated;
+      document.getElementById('food-title').innerText = translated.product;
+      document.getElementById('food-portion').innerText = translated.portionText;
+      (translated.components || []).forEach((component, index) => {
+        const name = document.getElementById(`component-name-${index}`);
+        if (name) name.innerText = component.name;
+      });
+      if (document.getElementById('score-summary').style.display === 'flex') {
+        document.getElementById('fun-fact-text').innerText = t('funFact', translated.funFact);
       }
     }
 
@@ -1228,6 +1649,7 @@
       }
       renderStatistics();
       document.getElementById('streak-count').innerText = localStorage.getItem('daily_streak') || '1';
+      updateStreakBadge();
     }
 
     function refreshTrophyProgressFromStorage() {
@@ -1270,26 +1692,23 @@
       const badge = document.getElementById('trophy-notification-badge');
       badge.hidden = newCount === 0;
       badge.innerText = newCount > 0 ? String(newCount) : '';
-      document.getElementById('trophies-button').setAttribute(
-        'aria-label',
-        newCount > 0 ? `Trophies, ${newCount} new` : 'Trophies'
-      );
+      document.getElementById('trophies-button').setAttribute('aria-label', t('trophyAria', newCount));
     }
 
     function renderTrophies() {
       const grid = document.getElementById('trophy-grid');
       grid.innerHTML = '';
       const unlocked = trophyDefinitions.filter(({ id }) => trophyCounts[id] > 0).length;
-      document.getElementById('trophy-progress').innerText = `UNLOCKED: ${unlocked} / ${trophyDefinitions.length}`;
-      trophyDefinitions.forEach(({ id, icon, name, description }) => {
+      document.getElementById('trophy-progress').innerText = t('unlocked', unlocked, trophyDefinitions.length);
+      trophyDefinitions.forEach(({ id, icon }, index) => {
         const count = trophyCounts[id] || 0;
         const card = document.createElement('article');
         card.className = `trophy-card${count ? '' : ' locked'}`;
         card.innerHTML = `
-          ${count ? `<span class="trophy-count">x${count}</span>` : '<span class="trophy-lock" aria-label="Locked">🔒</span>'}
+          ${count ? `<span class="trophy-count">x${count}</span>` : `<span class="trophy-lock" aria-label="${currentLanguage === 'es' ? 'Bloqueado' : 'Locked'}">🔒</span>`}
           <div class="trophy-icon">${icon}</div>
-          <div class="trophy-name">${name}</div>
-          <div class="trophy-description">${description}</div>
+          <div class="trophy-name">${translations[currentLanguage].trophyNames[index]}</div>
+          <div class="trophy-description">${translations[currentLanguage].trophyDescriptions[index]}</div>
         `;
         grid.appendChild(card);
       });
@@ -1300,9 +1719,10 @@
       toast.className = 'trophy-toast';
       toast.setAttribute('role', 'status');
       const heading = document.createElement('strong');
-      heading.innerText = '🏆 TROPHY UNLOCKED!';
+      heading.innerText = t('trophyUnlocked');
       const title = document.createElement('span');
-      title.innerText = `${trophy.icon} ${trophy.name}${count > 1 ? ` · x${count}` : ''}`;
+      const trophyIndex = trophyDefinitions.indexOf(trophy);
+      title.innerText = `${trophy.icon} ${translations[currentLanguage].trophyNames[trophyIndex]}${count > 1 ? ` · x${count}` : ''}`;
       toast.append(heading, title);
       const container = document.getElementById('trophy-toast-container');
       container.appendChild(toast);
@@ -1360,10 +1780,10 @@
       if (!grid) return;
       const stats = userStatistics[statsMode];
       const cards = [
-        ['perfect', '✨ PERFECT', 'Gold / ±1g'],
-        ['great', '🟢 GREAT', 'Green / ±5g'],
-        ['close', '🟡 CLOSE', 'Yellow-Orange / ±15g'],
-        ['miss', '🔴 MISS', '>15g']
+        ['perfect', t('perfectLabel'), t('perfectDescription')],
+        ['great', t('greatLabel'), t('greatDescription')],
+        ['close', t('closeLabel'), t('closeDescription')],
+        ['miss', t('missLabel'), t('missDescription')]
       ];
       grid.innerHTML = cards.map(([key, label, description]) => `
         <div class="stat-card">
@@ -1434,7 +1854,17 @@
         streakUpdated = true;
       }
       document.getElementById('streak-count').innerText = String(streak);
-      if (streakUpdated && streak >= 3) awardTrophies(['streak-master']);
+      updateStreakBadge();
+      if (streakUpdated) {
+        const streakTrophies = [
+          [5, 'streak-master-i'],
+          [10, 'streak-master-ii'],
+          [50, 'streak-master-iii']
+        ];
+        streakTrophies
+          .filter(([target, id]) => streak >= target && !trophyCounts[id])
+          .forEach(([, id]) => awardTrophies([id]));
+      }
     }
 
     async function loadDatabase() {
@@ -1446,11 +1876,10 @@
           throw new Error('food_data.json must contain ingredients and protein arrays');
         }
         foodCatalogs = data;
-        const featured = getLatestFood('ingredients');
+        const featured = getFoodForDay('ingredients', getCurrentDayNumber());
         if (featured) {
           document.getElementById('hero-img').src = featured.image;
-          document.getElementById('hero-product').innerText = featured.product;
-          document.getElementById('hero-category').innerText = `${featured.category} · ${featured.portionText}`;
+          renderFeaturedFood(featured);
         }
       } catch (e) {
         console.error('Error loading food_data.json', e);
@@ -1480,29 +1909,165 @@
       gameMode = mode;
     }
 
-    function getCurrentCatalog() {
-      return foodCatalogs[gameMode];
+    function getCurrentDayNumber() {
+      const now = new Date();
+      const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+      const dayNumber = Math.floor((today - START_DATE) / (1000 * 60 * 60 * 24)) + 1;
+      return dayNumber;
     }
 
-    function getLatestFood(mode = gameMode) {
-      return foodCatalogs[mode].reduce((latest, food) =>
-        !latest || food.dayNumber > latest.dayNumber ? food : latest, null);
+    function getFoodForDay(mode, dayNumber) {
+      const catalog = foodCatalogs[mode];
+      if (!Number.isInteger(dayNumber) || dayNumber < 1 || dayNumber > getCurrentDayNumber()) {
+        return null;
+      }
+      if (!catalog.length) return null;
+
+      const totalItems = catalog.length;
+      const index = (dayNumber - 1) % totalItems;
+      const date = new Date(START_DATE);
+      date.setUTCDate(date.getUTCDate() + dayNumber - 1);
+      const dateKey = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
+      return { ...catalog[index], dayNumber, date: dateKey };
+    }
+
+    function getEstimatedPercentile(score) {
+      return Math.min(99, Math.max(0, Math.round(score / 5)));
+    }
+
+    function renderPercentileChart(score, animate = true) {
+      const axis = document.getElementById('percentile-axis');
+      axis.replaceChildren();
+      for (let points = 0; points <= 500; points += 100) {
+        const x = 30 + (points / 500) * 300;
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        tick.setAttribute('class', 'tick-line');
+        tick.setAttribute('x1', String(x));
+        tick.setAttribute('y1', '108');
+        tick.setAttribute('x2', String(x));
+        tick.setAttribute('y2', '112');
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('class', 'tick-label');
+        label.setAttribute('x', String(x));
+        label.setAttribute('y', '128');
+        label.setAttribute('text-anchor', 'middle');
+        label.textContent = String(points);
+        axis.append(tick, label);
+      }
+
+      const baseline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      baseline.setAttribute('class', 'axis-line');
+      baseline.setAttribute('x1', '30');
+      baseline.setAttribute('y1', '110');
+      baseline.setAttribute('x2', '330');
+      baseline.setAttribute('y2', '110');
+      axis.prepend(baseline);
+
+      const markerLine = document.getElementById('percentile-marker-line');
+      const markerDot = document.getElementById('percentile-marker-dot');
+      const markerLabel = document.getElementById('percentile-marker-label');
+      const positionMarker = value => {
+        const x = 30 + (value / 500) * 300;
+        const normalizedScore = (value - 250) / 125;
+        const y = 108 - Math.exp(-0.5 * normalizedScore * normalizedScore) * 73;
+        markerLine.setAttribute('x1', String(x));
+        markerLine.setAttribute('x2', String(x));
+        markerLine.setAttribute('y1', String(y));
+        markerDot.setAttribute('cx', String(x));
+        markerDot.setAttribute('cy', String(y));
+        markerLabel.setAttribute('x', String(x));
+        markerLabel.setAttribute('y', String(Math.max(14, y - 12)));
+      };
+      const animationGeneration = ++chartAnimationGeneration;
+      positionMarker(0);
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (animate && !reduceMotion && score > 0) {
+        const duration = 1400;
+        let startTime;
+        const animateMarker = timestamp => {
+          if (animationGeneration !== chartAnimationGeneration) return;
+          if (startTime === undefined) startTime = timestamp;
+          const progress = Math.min(1, (timestamp - startTime) / duration);
+          const easedProgress = 1 - Math.pow(1 - progress, 3);
+          positionMarker(score * easedProgress);
+          if (progress < 1) {
+            requestAnimationFrame(animateMarker);
+          } else {
+            playAchievementSound();
+          }
+        };
+        requestAnimationFrame(animateMarker);
+      } else {
+        positionMarker(score);
+        if (animate) playAchievementSound();
+      }
+      document.getElementById('percentile-chart').setAttribute(
+        'aria-label',
+        `Score distribution from 0 to 500 points. Your score: ${score}.`
+      );
+    }
+
+    function showResultSummary(score, emojis, animate = true) {
+      const percentile = getEstimatedPercentile(score);
+      renderPercentileChart(score, animate);
+      document.getElementById('percentile-text').innerText = t('percentile', percentile);
+      document.getElementById('percentile-marker-label').textContent = t('you');
+      document.getElementById('percentile-chart').setAttribute('aria-label', t('scoreDistribution', score));
+      resultEmojis = emojis;
+      document.getElementById('share-status').innerText = '';
+    }
+
+    async function shareResult() {
+      const score = Number.parseInt(document.getElementById('final-score-text').innerText, 10);
+      const percentile = getEstimatedPercentile(score);
+      const dayNumber = currentFood.dayNumber ?? 1;
+      const scoreEmoji = score >= 400 ? '🌟' : score >= 250 ? '✨' : '💪';
+      const tiles = resultEmojis.length ? resultEmojis.join('') : '⬜⬜⬜⬜';
+      const text = `${t('shareTitle', gameMode, dayNumber)}
+${t('score')}: ${score}/500 PTS ${scoreEmoji}
+${t('sharePercentile', percentile)}
+
+${tiles}
+
+${t('playNow')}`;
+      const status = document.getElementById('share-status');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          const copied = document.execCommand('copy');
+          textarea.remove();
+          if (!copied) throw new Error('Clipboard copy command was rejected');
+        }
+        status.innerText = t('copied');
+      } catch (error) {
+        console.error('Unable to copy share result to clipboard', error);
+        status.innerText = t('copyFailed');
+      }
     }
 
     function startDailyGame(mode = 'ingredients') {
       setGameMode(mode);
       currentIsDaily = true;
-      const latestFood = getLatestFood(mode);
-      if (!latestFood) {
-        console.error(`No food entries available for ${mode} mode`);
+      const dayNumber = getCurrentDayNumber();
+      if (!getFoodForDay(mode, dayNumber)) {
+        console.error(`No food entry available for day ${dayNumber} in ${mode} mode`);
         return;
       }
-      loadFoodItem(foodCatalogs[mode].indexOf(latestFood));
+      loadFoodItem(dayNumber);
       showScreen('game-screen');
     }
 
     function showArchive(mode = archiveMode) {
       archiveMode = mode;
+      const translationGeneration = ++archiveTranslationGeneration;
       const ingredientsArchive = mode === 'ingredients';
       document.getElementById('ingredients-archive-tab').classList.toggle('active', ingredientsArchive);
       document.getElementById('ingredients-archive-tab').setAttribute('aria-selected', String(ingredientsArchive));
@@ -1511,53 +2076,59 @@
       const listContainer = document.getElementById('archive-list');
       listContainer.innerHTML = '';
 
-      const catalog = foodCatalogs[mode];
-      const sortedDatabase = [...catalog].sort((a, b) => b.dayNumber - a.dayNumber);
-
-      sortedDatabase.forEach((food) => {
+      for (let dayNumber = getCurrentDayNumber(); dayNumber >= 1; dayNumber--) {
+        const food = getFoodForDay(mode, dayNumber);
+        if (!food) continue;
         const item = document.createElement('div');
         item.className = 'archive-item';
 
-        const dayKey = food.dayNumber;
+        const dayKey = dayNumber;
         const scoreKey = `score_${mode}_day_${dayKey}`;
         const savedScore = localStorage.getItem(scoreKey)
           ?? (mode === 'ingredients' ? localStorage.getItem(`score_day_${dayKey}`) : null);
 
         const isPlayed = savedScore !== null && savedScore !== '';
-        const scoreDisplay = isPlayed 
+        const scoreDisplay = isPlayed
           ? `<span class="score-badge-archive">🏆 ${savedScore} PTS</span>`
-          : `<span style="color:#ff9800; font-weight:bold;">PLAY ➔</span>`;
+          : `<span style="color:#ff9800; font-weight:bold;">${t('play')}</span>`;
 
         item.innerHTML = `
           <div>
-            <strong>Day #${dayKey}</strong> - ${food.product}
-            <div style="font-size:0.75rem; color:#7b7e96; font-weight:700;">${food.date || 'Past Day'} • ${food.category}</div>
+            <strong>${t('dayLabel', dayKey)} - <span class="archive-product">${food.product}</span></strong>
+            <div class="archive-description" style="font-size:0.75rem; color:#7b7e96; font-weight:700;">${food.date || t('pastDay')} • ${food.category}</div>
           </div>
           ${scoreDisplay}
         `;
 
-        const originalIndex = catalog.indexOf(food);
-
         item.onclick = () => {
           setGameMode(mode);
           currentIsDaily = false;
-          loadFoodItem(originalIndex);
-          showScreen('game-screen');
+          if (loadFoodItem(dayKey)) showScreen('game-screen');
         };
 
         listContainer.appendChild(item);
-      });
+        translateFoodPreview(food).then(translated => {
+          if (translationGeneration !== archiveTranslationGeneration || archiveMode !== mode) return;
+          item.querySelector('.archive-product').textContent = translated.product;
+          item.querySelector('.archive-description').textContent =
+            `${food.date || t('pastDay')} • ${translated.category}`;
+        });
+      }
 
       showScreen('archive-screen');
     }
 
-    function loadFoodItem(index) {
-      currentFood = getCurrentCatalog()[index];
+    function loadFoodItem(dayNumber) {
+      currentFood = getFoodForDay(gameMode, dayNumber);
       if (!currentFood) {
-        console.error(`No ${gameMode} food found at index ${index}`);
-        return;
+        console.error(`No ${gameMode} food available for day ${dayNumber}`);
+        return false;
       }
+      resultEmojis = [];
+      currentRankKey = '';
+      currentTranslatedFood = { ...currentFood };
       gameGeneration++;
+      unlockRangeInputs();
       document.body.classList.remove('screen-shake');
       document.getElementById('limit-warning').style.display = 'none';
 
@@ -1568,17 +2139,16 @@
       if (currentFood.image) foodImage.src = currentFood.image;
       document.getElementById('food-title').innerText = currentFood.product;
       document.getElementById('food-portion').innerText = currentFood.portionText;
-      document.getElementById('game-eyebrow').innerText = gameMode === 'protein'
-        ? 'Protein challenge'
-        : "Today's ingredient challenge";
-      document.getElementById('protein-instructions').innerText = 'Guess how many grams of PROTEIN are in this item! 🥚';
-      document.getElementById('limit-warning').innerText = `🔒 Total limit reached (100 ${unit} max)!`;
+      document.getElementById('game-eyebrow').innerText = `${t('day', currentFood.dayNumber)} · ${gameMode === 'protein' ? t('proteinChallenge') : t('dailyChallenge')}`;
+      document.getElementById('protein-instructions').innerText = t('proteinInstructions');
+      document.getElementById('limit-warning').innerText = t('limitWarning', unit);
 
       document.getElementById('score-summary').style.display = 'none';
+      document.getElementById('share-status').innerText = '';
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.style.display = 'block';
       submitBtn.disabled = false;
-      submitBtn.innerText = 'SUBMIT GUESS 🚀';
+      submitBtn.innerText = t('submitGuess');
       const archiveButton = document.getElementById('direct-archive-btn');
       archiveButton.style.display = 'none';
       archiveButton.onclick = () => showArchive(gameMode);
@@ -1608,7 +2178,7 @@
         box.innerHTML = `
           <div class="star-badge" id="star-badge-${idx}">★</div>
           <div class="comp-header">
-            <span>${comp.name}</span>
+            <span id="component-name-${idx}">${comp.name}</span>
             <span class="comp-value" id="comp-val-${idx}">0${unit}</span>
           </div>
           <input type="range" id="slider-${idx}" class="type-${comp.type}" min="0" max="100" value="0" ondragstart="return false;" oninput="onSliderMove(${idx})">
@@ -1622,6 +2192,8 @@
       } else {
         validateTotalSubmit();
       }
+      translateCurrentFood(gameGeneration);
+      return true;
     }
 
     function createProteinAttempt() {
@@ -1637,13 +2209,16 @@
       box.id = `protein-attempt-box-${attempt}`;
       box.innerHTML = `
         <div class="comp-header">
-          <span>Protein · Attempt ${attempt} of 3</span>
+          <span>${currentLanguage === 'es' ? `Proteína · Intento ${attempt} de 3` : `Protein · Attempt ${attempt} of 3`}</span>
           <span class="comp-value" id="protein-value-${attempt}">0g</span>
         </div>
         <input type="range" id="protein-slider-${attempt}" class="type-other" min="0" max="${maxLimit}" step="1" value="0" ondragstart="return false;" oninput="updateProteinAttempt(${attempt})">
         <div class="comp-real-val" id="protein-feedback-${attempt}"></div>
       `;
       document.getElementById('protein-attempts').appendChild(box);
+      const slider = document.getElementById(`protein-slider-${attempt}`);
+      slider.disabled = false;
+      slider.style.pointerEvents = 'auto';
       updateProteinSubmit();
     }
 
@@ -1658,7 +2233,21 @@
       const slider = document.getElementById(`protein-slider-${proteinAttemptCount}`);
       const enabled = slider && Number(slider.value) >= 1;
       submitBtn.disabled = !enabled;
-      submitBtn.innerText = `SUBMIT ATTEMPT ${proteinAttemptCount} OF 3 🥚`;
+      submitBtn.innerText = t('submitAttempt', proteinAttemptCount);
+    }
+
+    function lockRangeInputs() {
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.disabled = true;
+        slider.style.pointerEvents = 'none';
+      });
+    }
+
+    function unlockRangeInputs() {
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.disabled = false;
+        slider.style.pointerEvents = 'auto';
+      });
     }
 
     function validateTotalSubmit() {
@@ -1670,10 +2259,10 @@
       if (total !== 100) {
         const missing = 100 - total;
         submitBtn.disabled = true;
-        submitBtn.innerText = `REACH 100${unit} TO SUBMIT (${missing}${unit} needed)`;
+        submitBtn.innerText = t('reachLimit', unit, missing);
       } else {
         submitBtn.disabled = false;
-        submitBtn.innerText = `SUBMIT GUESS 🚀`;
+        submitBtn.innerText = t('submitGuess');
       }
     }
 
@@ -1684,7 +2273,7 @@
 
     function updateProgressBar(total, unit) {
       const complete = total === 100;
-      document.getElementById('progress-total').innerText = `Total: ${total} / 100${unit}`;
+      document.getElementById('progress-total').innerText = t('total', total, unit);
       document.getElementById('progress-track').classList.toggle('complete', complete);
       document.getElementById('progress-track').setAttribute('aria-valuenow', total);
 
@@ -1728,6 +2317,7 @@
     // EVALUACIÓN CON NUEVOS RANGOS DE PRECISIÓN Y ESTRELLA
     // ----------------------------------------------------
     async function submitGuess() {
+      lockRangeInputs();
       if (gameMode === 'protein') {
         submitProteinGuess();
         return;
@@ -1759,15 +2349,11 @@
           hasPerfectIngredient = true;
           box.classList.add('gold');
           starBadge.style.display = 'flex'; // Mostrar la estrellita arriba a la derecha
+          realValText.style.display = 'block';
+          realValText.innerText = t('perfectMatch', realVal, unit, 125);
+          realValText.style.color = '#ffd700';
           playGoldSound();
           triggerStarShower();
-          
-          await new Promise(r => setTimeout(r, 500));
-          if (gameGeneration !== submittedGameGeneration) return;
-
-          realValText.style.display = 'block';
-          realValText.innerText = `✨ PERFECT MATCH! Real: ${realVal}${unit} (+125 PTS)`;
-          realValText.style.color = '#ffd700';
           totalPoints += 125;
         }
         // 🟢 2. VERDE: Margen de -5 a 5 (+100 PTS)
@@ -1775,7 +2361,7 @@
           box.classList.add('green');
           playGreenSound();
           realValText.style.display = 'block';
-          realValText.innerText = `🟢 Real: ${realVal}${unit} (+100 PTS)`;
+          realValText.innerText = t('realPoints', '🟢', realVal, unit, 100);
           totalPoints += 100;
         } 
         // 🟧 3. AMARILLO NARANJA: Margen de 5.1 a 15 (+50 PTS)
@@ -1783,7 +2369,7 @@
           box.classList.add('orange-yellow');
           playYellowSound();
           realValText.style.display = 'block';
-          realValText.innerText = `🟧 Real: ${realVal}${unit} (+50 PTS)`;
+          realValText.innerText = t('realPoints', '🟧', realVal, unit, 50);
           totalPoints += 50;
         } 
         // 🟥 4. ROJO: Más de 15 (0 PTS)
@@ -1792,7 +2378,7 @@
           document.body.className = 'screen-shake';
           playRedSound();
           realValText.style.display = 'block';
-          realValText.innerText = `🟥 Real: ${realVal}${unit} (0 PTS)`;
+          realValText.innerText = t('realPointsNoScore', '🟥', realVal, unit);
           setTimeout(() => { document.body.className = ''; }, 350);
         }
 
@@ -1821,26 +2407,32 @@
       recordArchiveCompletion(submittedFood);
 
       const ranks = [
-        [500, "👑 MEGA NUTRITION LEGEND", 99],
-        [450, "💎 MACRO WIZARD", 95],
-        [400, "🏅 NUTRITION MASTER", 88],
-        [350, "🍉 HEALTHY EXPERT", 80],
-        [300, "🥦 DIETITIAN APPRENTICE", 70],
-        [250, "🥑 NUTRITION STUDENT", 60],
-        [200, "🥗 BALANCED NIBBLER", 50],
-        [150, "🍕 CASUAL EATER", 40],
-        [100, "🌭 SNACK AMATEUR", 30],
-        [50, "🍟 FAST FOOD JUNKIE", 15],
-        [0, "🍩 ULTRA PROCESSED FANATIC", 5]
+        [500, 'rankHealthyLegend'],
+        [450, 'rankMacroWizard'],
+        [400, 'rankNutritionMaster'],
+        [350, 'rankHealthyExpert'],
+        [300, 'rankDietitian'],
+        [250, 'rankStudent'],
+        [200, 'rankBalanced'],
+        [150, 'rankCasual'],
+        [100, 'rankSnack'],
+        [50, 'rankFastFood'],
+        [0, 'rankUltraProcessed']
       ];
-      const [_, rankBadge, percentile] = ranks.find(([minimum]) => totalPoints >= minimum);
+      const [, rankKey] = ranks.find(([minimum]) => totalPoints >= minimum);
+      currentRankKey = rankKey;
 
       const summary = document.getElementById('score-summary');
-      document.getElementById('score-title').innerText = 'PUZZLE COMPLETED! 🎉';
-      document.getElementById('final-score-text').innerText = `${totalPoints} / 500 PTS`;
-      document.getElementById('rank-badge-text').innerText = rankBadge;
-      document.getElementById('percentile-text').innerText = `📊 Better than ${percentile}% of players today!`;
-      document.getElementById('fun-fact-text').innerText = `💡 Fun Fact: ${submittedFood.funFact}`;
+      document.getElementById('score-title').innerText = t('puzzleComplete');
+      document.getElementById('final-score-text').innerText = t('points', totalPoints);
+      document.getElementById('rank-badge-text').innerText = t(rankKey);
+      showResultSummary(totalPoints, ingredientResults.map(color => ({
+        perfect: '🟨',
+        great: '🟩',
+        close: '🟧',
+        miss: '🟥'
+      }[color])));
+      document.getElementById('fun-fact-text').innerText = t('funFact', currentTranslatedFood.funFact || submittedFood.funFact);
       summary.style.display = 'flex';
 
       document.getElementById('direct-archive-btn').style.display = 'block';
@@ -1866,7 +2458,8 @@
       slider.disabled = true;
 
       const difference = Math.abs(guess - proteinValue);
-      recordColorResult('protein', difference);
+      const resultColor = recordColorResult('protein', difference);
+      resultEmojis.push(({ perfect: '🟨', great: '🟩', close: '🟧', miss: '🟥' })[resultColor]);
       const points = difference <= 1
         ? [500, 350, 200][attempt - 1]
         : attempt === 3 && difference <= 5 ? 100 : 0;
@@ -1876,8 +2469,8 @@
         box.classList.add(isPerfect ? 'gold' : 'green');
         feedback.style.display = 'block';
         feedback.innerText = isPerfect
-          ? `✨ PERFECT MATCH! Real: ${proteinValue}g (+${points} PTS)`
-          : `🟢 Close enough! Real: ${proteinValue}g (+${points} PTS)`;
+          ? t('perfectMatch', proteinValue, 'g', points)
+          : t('closeEnough', proteinValue, 'g', points);
         feedback.style.color = isPerfect ? '#ffd700' : '#4caf50';
         if (isPerfect) {
           const star = document.createElement('div');
@@ -1897,12 +2490,10 @@
       box.classList.add('red');
       feedback.style.display = 'block';
       if (attempt < 3) {
-        const hint = guess < proteinValue
-          ? '▲ HIGHER! (The real value is higher)'
-          : '▼ LOWER! (The real value is lower)';
-        feedback.innerHTML = `🟥 Not quite — try the next slider!<span class="protein-hint">${hint}</span>`;
+        const translatedHint = guess < proteinValue ? t('higherHint') : t('lowerHint');
+        feedback.innerHTML = `${t('tryNext')}<span class="protein-hint">${translatedHint}</span>`;
       } else {
-        feedback.innerText = `🟥 No match. Real protein: ${proteinValue}g`;
+        feedback.innerText = t('realProtein', proteinValue);
       }
       feedback.style.color = '#f44336';
       playRedSound();
@@ -1918,19 +2509,20 @@
 
     function finishProteinGame(attempt, points, proteinValue) {
       const ranks = [
-        [500, '👑 PROTEIN GOD'],
-        [450, '💪 ELITE PROTEIN PRO'],
-        [400, '🏆 PROTEIN LEGEND'],
-        [350, '🏋️ GYM BRO'],
-        [300, '💪 PROTEIN ATHLETE'],
-        [250, '🥚 PROTEIN PRO'],
-        [200, '🐣 FITNESS BEGINNER'],
-        [150, '⚡ FIT IN TRAINING'],
-        [100, '🌱 PROTEIN ROOKIE'],
-        [50, '🥴 LOW PROTEIN ENERGY'],
-        [0, '🍩 CATABOLIC DISASTER']
+        [500, 'rankProteinGod'],
+        [450, 'rankEliteProtein'],
+        [400, 'rankProteinLegend'],
+        [350, 'rankGymBro'],
+        [300, 'rankProteinAthlete'],
+        [250, 'rankProteinPro'],
+        [200, 'rankFitnessBeginner'],
+        [150, 'rankFitTraining'],
+        [100, 'rankProteinRookie'],
+        [50, 'rankLowProtein'],
+        [0, 'rankCatabolic']
       ];
-      const rankBadge = ranks.find(([minimum]) => points >= minimum)[1];
+      const rankKey = ranks.find(([minimum]) => points >= minimum)[1];
+      currentRankKey = rankKey;
       const dayKey = currentFood.dayNumber ?? 1;
       localStorage.setItem(`score_protein_day_${dayKey}`, points);
       const trophiesToAward = ['first-shake'];
@@ -1941,13 +2533,11 @@
       recordDailyStreak();
       recordArchiveCompletion(currentFood);
       document.getElementById('submit-btn').style.display = 'none';
-      document.getElementById('score-title').innerText = points > 0 ? 'PROTEIN CHALLENGE COMPLETE! 🥚' : 'PROTEIN CHALLENGE OVER';
-      document.getElementById('final-score-text').innerText = `${points} / 500 PTS`;
-      document.getElementById('rank-badge-text').innerText = rankBadge;
-      document.getElementById('percentile-text').innerText = points > 0
-        ? `${points === 100 ? 'Close guess' : 'Perfect match'} on attempt ${attempt}.`
-        : `All 3 attempts used — the exact answer is ${proteinValue}g.`;
-      document.getElementById('fun-fact-text').innerText = `💡 Fun Fact: ${currentFood.funFact}`;
+      document.getElementById('score-title').innerText = points > 0 ? t('proteinComplete') : t('proteinOver');
+      document.getElementById('final-score-text').innerText = t('points', points);
+      document.getElementById('rank-badge-text').innerText = t(rankKey);
+      showResultSummary(points, resultEmojis);
+      document.getElementById('fun-fact-text').innerText = t('funFact', currentTranslatedFood.funFact || currentFood.funFact);
       document.getElementById('score-summary').style.display = 'flex';
       document.getElementById('direct-archive-btn').style.display = 'block';
       document.getElementById('direct-archive-btn').onclick = () => showArchive('protein');
@@ -1972,10 +2562,10 @@
           `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
       }, 1000);
 
-      const options = { month: 'short', day: 'numeric' };
-      document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', options).toUpperCase();
+      updateCurrentDate();
     }
 
+    loadTranslationCache();
     initializeTrophies();
     window.addEventListener('storage', event => {
       if (event.storageArea === localStorage
@@ -1988,6 +2578,7 @@
       if (document.visibilityState === 'visible') refreshTrophyProgressFromStorage();
     });
     applyTheme(localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
+    applyTranslations();
     startTimer();
     loadDatabase();
   </script>
