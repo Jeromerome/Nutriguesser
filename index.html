@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IngredientGuesser - Daily Food Game</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
 
@@ -788,6 +787,7 @@
     .score-badge-archive { color: #225f37; background: #d9f3df; border: 1px solid var(--ink); }
 
     #game-screen .content-panel { max-width: 780px; }
+    #game-screen .content-panel.results-layout { max-width: 1200px; row-gap: 14px; }
     .food-card { display: grid; grid-template-columns: minmax(160px, 0.8fr) 1fr; align-items: center; gap: 22px; padding: 0 0 20px; background: transparent; border: 0; border-bottom: 1px solid #d9d3c6; border-radius: 0; }
     .food-img { height: 150px; margin: 0; border: var(--line); border-radius: 14px; object-fit: cover; }
     .food-title { font-size: clamp(1.25rem, 3vw, 1.8rem); }
@@ -810,7 +810,6 @@
     .score-number { color: var(--ink); }
     .rank-badge { color: var(--ink); background: var(--surface-accent); border: 1px solid var(--ink); }
     .percentile-text, .fun-fact { color: var(--muted); }
-    #game-screen > .content-panel > .play-btn,
     #game-screen > .content-panel > .archive-btn,
     #game-screen > .content-panel > .secondary-btn { width: 100%; margin-top: 12px !important; }
 
@@ -844,6 +843,40 @@
     .stat-card { padding: 18px 14px; text-align: center; background: var(--surface-warm); border: var(--line); border-radius: 14px; box-shadow: 3px 3px 0 var(--line-shadow); }
     .stat-label { color: var(--muted); font-size: 0.83rem; font-weight: 900; }
     .stat-value { margin-top: 6px; font-size: 2rem; font-weight: 900; }
+    .leaderboard-registration { width: 100%; margin-top: 18px; padding: 18px; background: var(--surface); border: var(--line); border-radius: 14px; }
+    .leaderboard-registration[hidden] { display: none; }
+    .leaderboard-registration h3 { margin: 0 0 12px; }
+    .leaderboard-form { display: flex; flex-wrap: wrap; gap: 10px; }
+    .leaderboard-form input { flex: 1 1 180px; min-width: 0; padding: 12px; color: var(--ink); font: inherit; background: var(--paper); border: var(--line); border-radius: 10px; user-select: text; -webkit-user-select: text; }
+    .leaderboard-form button { flex: 1 1 180px; }
+    .leaderboard-status { min-height: 1.3em; margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; font-weight: 800; }
+    .leaderboard-list { width: 100%; margin-top: 16px; border-collapse: collapse; text-align: left; }
+    .leaderboard-list th, .leaderboard-list td { padding: 10px 8px; border-bottom: 1px solid var(--muted); }
+    .leaderboard-list th:first-child, .leaderboard-list td:first-child { width: 58px; text-align: center; }
+    .leaderboard-list th:last-child, .leaderboard-list td:last-child { text-align: right; white-space: nowrap; }
+    .leaderboard-empty { padding: 18px 0; color: var(--muted); text-align: center; }
+    .results-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr); grid-template-areas: "food summary" "warning summary" "instructions summary" "sliders summary" "protein summary" "progress summary" "guess archive" "menu menu"; align-items: start; column-gap: 28px; }
+    .results-layout > .food-card { grid-area: food; width: 100%; }
+    .results-layout > #limit-warning { grid-area: warning; }
+    .results-layout > #protein-instructions { grid-area: instructions; }
+    .results-layout > #sliders-container { grid-area: sliders; width: 100%; }
+    .results-layout > #protein-attempts { grid-area: protein; width: 100%; }
+    .results-layout > #progress-track { grid-area: progress; width: 100%; }
+    .results-layout > #submit-btn { grid-area: guess; width: 100%; }
+    .results-layout > #score-summary { grid-area: summary; width: 100%; }
+    .results-layout > #direct-archive-btn { grid-area: archive; width: 100%; }
+    .results-layout > .secondary-btn { grid-area: menu; width: 100%; }
+    .result-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 12px; width: 100%; margin-top: 12px; }
+    .result-actions .share-result-btn { width: 100%; height: 100%; margin: 0; }
+    .result-actions .leaderboard-registration { display: flex; flex-direction: column; justify-content: center; margin: 0; padding: 12px; text-align: center; }
+    .result-actions .leaderboard-registration h3 { font-size: 1rem; }
+    .result-actions .leaderboard-form { flex-direction: column; }
+    .result-actions .leaderboard-form input,
+    .result-actions .leaderboard-form button { flex: 1 1 auto; width: 100%; }
+    .result-actions .leaderboard-status { margin-top: 6px; }
+    .easter-egg-overlay { position: fixed; inset: 0; z-index: 10001; overflow: hidden; pointer-events: none; }
+    .easter-egg-particle { position: absolute; top: -12vh; left: var(--particle-x); font-size: var(--particle-size); line-height: 1; animation: easter-egg-fall var(--particle-duration) cubic-bezier(0.2, 0.65, 0.35, 1) var(--particle-delay) both; }
+    @keyframes easter-egg-fall { 0% { transform: translate3d(0, -12vh, 0) rotate(0deg) scale(0.6); opacity: 0; } 12% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate3d(var(--particle-drift), 115vh, 0) rotate(var(--particle-rotation)) scale(1.15); opacity: 0; } }
     .trophy-card { position: relative; min-height: 150px; padding: 18px 16px; color: var(--ink); text-align: center; background: var(--surface-warm); border: var(--line); border-radius: 16px; box-shadow: 3px 3px 0 var(--line-shadow); }
     .trophy-card.locked { filter: grayscale(100%); opacity: 0.4; }
     .trophy-icon { margin-bottom: 6px; font-size: 2.1rem; }
@@ -928,6 +961,10 @@
     html[data-theme="dark"] .trophy-card { background: var(--surface-warm); }
     html[data-theme="dark"] .stat-card { background: var(--surface-warm); }
 
+    @media (max-width: 900px) {
+      .results-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "food" "warning" "instructions" "sliders" "protein" "progress" "guess" "summary" "archive" "menu"; }
+    }
+
     @media (max-width: 760px) {
       body { padding: 82px 20px 28px; }
       .site-header { min-height: 64px; padding: 10px 18px; }
@@ -943,6 +980,8 @@
       .food-card { grid-template-columns: 1fr; }
       .food-img { height: 210px; }
       .content-panel { margin: 20px auto; }
+      .results-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "food" "warning" "instructions" "sliders" "protein" "progress" "guess" "summary" "archive" "menu"; }
+      .results-layout > #score-summary { margin-bottom: 0; }
       .trophy-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: 1fr; }
     }
@@ -957,6 +996,7 @@
       .hero-actions { grid-template-columns: 1fr; }
       .hero-actions > button { width: 100%; }
       .help-tabs { flex-direction: column; }
+      .result-actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -967,6 +1007,7 @@
       <a href="#how-to-play" onclick="showHowToPlay(); return false;">How to Play</a>
       <a href="#" onclick="startDailyGame(); return false;">Daily</a>
       <a href="#" onclick="showArchive(); return false;">Archive</a>
+      <a href="#" onclick="openLeaderboard(); return false;" data-i18n="leaderboard">Leaderboard</a>
       <button class="sound-toggle" id="language-toggle" type="button" onclick="toggleLanguage()" aria-label="Switch language">🌐 EN / ES</button>
       <button class="sound-toggle" id="sound-toggle" type="button" onclick="toggleSound()" aria-pressed="true">🔊 Sound on</button>
       <button class="sound-toggle" id="theme-toggle" type="button" onclick="toggleTheme()" aria-pressed="false">🌙 Dark Mode</button>
@@ -1049,7 +1090,17 @@
             <text id="percentile-marker-label" class="you-label" x="180" y="22" text-anchor="middle">YOU</text>
           </svg>
           <div class="percentile-text percentile-caption" id="percentile-text">Better than 50% of today's players.</div>
-          <button id="share-result-btn" class="play-btn share-result-btn" type="button" onclick="shareResult()">📤 Share Result</button>
+          <div class="result-actions">
+            <button id="share-result-btn" class="play-btn share-result-btn" type="button" onclick="shareResult()">📤 Share Result</button>
+            <section id="leaderboard-registration" class="leaderboard-registration" aria-labelledby="leaderboard-registration-title">
+              <h3 id="leaderboard-registration-title" data-i18n="leaderboard">Leaderboard</h3>
+              <form id="leaderboard-form" class="leaderboard-form" onsubmit="submitLeaderboardScore(event)">
+                <input id="leaderboard-name" type="text" placeholder="Tu nombre / Nickname" maxlength="15" autocomplete="nickname" required data-i18n-placeholder="nicknamePlaceholder" data-i18n-aria="nicknamePlaceholder" aria-label="Tu nombre / Nickname">
+                <button id="leaderboard-submit" class="play-btn" type="submit" data-i18n="submitLeaderboard">Submit to Leaderboard</button>
+              </form>
+              <div id="leaderboard-registration-status" class="leaderboard-status" role="status" aria-live="polite"></div>
+            </section>
+          </div>
           <div id="share-status" class="share-status" role="status" aria-live="polite"></div>
           <div class="fun-fact" id="fun-fact-text">...</div>
         </div>
@@ -1067,6 +1118,21 @@
       </div>
     </section>
   </main>
+  <dialog id="leaderboard-modal" class="app-modal" aria-labelledby="leaderboard-title">
+    <div class="modal-heading">
+      <h2 id="leaderboard-title">Leaderboard</h2>
+      <button class="modal-close" type="button" onclick="closeDialog('leaderboard-modal')" aria-label="Close leaderboard" data-i18n-aria="closeLeaderboard">✕</button>
+    </div>
+    <div class="stats-mode-tabs" role="group" aria-label="Leaderboard mode" data-i18n-aria="leaderboardModes">
+      <button id="ingredients-leaderboard-tab" class="stats-mode-tab" type="button" aria-pressed="true" onclick="selectLeaderboardMode('ingredients')" data-i18n="ingredientsMode">🧩 Ingredients Mode</button>
+      <button id="protein-leaderboard-tab" class="stats-mode-tab" type="button" aria-pressed="false" onclick="selectLeaderboardMode('protein')" data-i18n="proteinMode">🥚 Protein Mode</button>
+    </div>
+    <p id="leaderboard-load-status" class="leaderboard-status" role="status" aria-live="polite"></p>
+    <table class="leaderboard-list">
+      <thead><tr><th data-i18n="position">#</th><th data-i18n="player">Player</th><th data-i18n="score">Score</th></tr></thead>
+      <tbody id="leaderboard-rows"></tbody>
+    </table>
+  </dialog>
   <dialog id="how-to-modal" class="app-modal" aria-labelledby="how-to-title">
     <div class="modal-heading">
       <h2 id="how-to-title" data-i18n="howToPlay">How to Play</h2>
@@ -1109,8 +1175,12 @@
     </section>
   </dialog>
   <div id="trophy-toast-container" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
+  <div id="easter-egg-overlay" class="easter-egg-overlay" aria-hidden="true"></div>
   <footer class="created-by"><span data-i18n="createdBy">Created by</span> <span>Jerome</span></footer>
 
+  <script>
+    window.NUTRIGUESSER_LEADERBOARD_API_BASE_URL = "https://nutriguesserr-default-rtdb.firebaseio.com";
+  </script>
   <script>
     // ----------------------------------------------------
     // SINTETIZADOR DE SONIDOS
@@ -1192,6 +1262,52 @@
       playNotes([783.99, 1046.5, 1318.51], 0.07);
     }
 
+    function playJokeSound() {
+      if (!soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const start = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(420, start);
+      osc.frequency.exponentialRampToValueAtTime(95, start + 0.32);
+      osc.frequency.setValueAtTime(180, start + 0.36);
+      osc.frequency.exponentialRampToValueAtTime(65, start + 0.72);
+      gain.gain.setValueAtTime(0.09, start);
+      gain.gain.setValueAtTime(0.09, start + 0.65);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.75);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(start);
+      osc.stop(start + 0.76);
+    }
+
+    function triggerJokeCelebration() {
+      playJokeSound();
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 110, spread: 110, startVelocity: 42, shapes: ['star'], colors: ['#ffd700', '#ff7546', '#60a5fa', '#ffffff'], origin: { x: 0.5, y: 0.55 } });
+        confetti({ particleCount: 45, spread: 150, startVelocity: 28, colors: ['#22c55e', '#f472b6', '#facc15'], origin: { x: 0.5, y: 0.7 } });
+      }
+      const overlay = document.getElementById('easter-egg-overlay');
+      const emojis = ['😎', '🔥', '🏆', '✨', '⭐'];
+      overlay.replaceChildren();
+      for (let index = 0; index < 32; index++) {
+        const particle = document.createElement('span');
+        const duration = 2 + Math.random() * 1.4;
+        particle.className = 'easter-egg-particle';
+        particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        particle.style.setProperty('--particle-x', `${Math.random() * 100}%`);
+        particle.style.setProperty('--particle-size', `${1.4 + Math.random() * 2.2}rem`);
+        particle.style.setProperty('--particle-duration', `${duration}s`);
+        particle.style.setProperty('--particle-delay', `${Math.random() * 0.45}s`);
+        particle.style.setProperty('--particle-drift', `${Math.random() * 220 - 110}px`);
+        particle.style.setProperty('--particle-rotation', `${Math.random() * 900 - 450}deg`);
+        particle.addEventListener('animationend', () => particle.remove(), { once: true });
+        overlay.appendChild(particle);
+      }
+      window.setTimeout(() => overlay.replaceChildren(), 4200);
+    }
+
     function triggerStarShower() {
       confetti({
         particleCount: 40,
@@ -1205,6 +1321,16 @@
 
     document.addEventListener('click', (e) => {
       if (e.target.tagName === 'BUTTON' && !e.target.disabled) playClickSound();
+    });
+
+    document.addEventListener('keydown', event => {
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      const activeElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const isEditing = element => element && (element.isContentEditable
+        || element.closest('input, textarea, select, [contenteditable="true"]'));
+      if (event.repeat || event.isComposing || event.altKey || event.ctrlKey || event.metaKey
+        || isEditing(target) || isEditing(activeElement)) return;
+      if (event.key === 'j' || event.key === 'J') triggerJokeCelebration();
     });
 
     function toggleSound() {
@@ -1237,6 +1363,7 @@
     let proteinAttemptCount = 0;
     let gameGeneration = 0;
     let currentIsDaily = false;
+    let currentCanSubmitLeaderboard = false;
     let resultEmojis = [];
     let currentRankKey = '';
     let currentTranslatedFood = {};
@@ -1264,6 +1391,12 @@
     let archiveDaysCompleted = [];
     let userStatistics = { ingredients: { perfect: 0, great: 0, close: 0, miss: 0 }, protein: { perfect: 0, great: 0, close: 0, miss: 0 } };
     let statsMode = 'ingredients';
+    let leaderboardMode = 'ingredients';
+    let leaderboardLoadGeneration = 0;
+    // Example: set window.NUTRIGUESSER_LEADERBOARD_API_BASE_URL = 'https://PROJECT_ID-default-rtdb.firebaseio.com' before this script.
+    const LEADERBOARD_API_BASE_URL = typeof window.NUTRIGUESSER_LEADERBOARD_API_BASE_URL === 'string'
+      ? window.NUTRIGUESSER_LEADERBOARD_API_BASE_URL
+      : '';
     const translations = {
       en: {
         pageTitle: 'IngredientGuesser - Daily Food Game', featuredAlt: "Today's featured food",
@@ -1277,6 +1410,14 @@
         newChallenge: 'A new food challenge every day', loadingChallenge: 'Loading daily challenge...',
         nextUnlocks: 'NEXT DAILY PRODUCT UNLOCKS IN:', navMain: 'Main navigation',
         navHowTo: 'How to Play', navDaily: 'Daily', navArchive: 'Archive', soundOn: '🔊 Sound on',
+        leaderboard: 'Leaderboard', nicknamePlaceholder: 'Your name / Nickname', submitLeaderboard: 'Submit to Leaderboard',
+        registeredOnlyFirst: 'Score registered (First attempt only)', leaderboardTitle: day => `Leaderboard · Day ${day}`,
+        leaderboardModes: 'Leaderboard mode', closeLeaderboard: 'Close leaderboard',
+        position: '#', player: 'Player', leaderboardLoading: 'Loading leaderboard…',
+        leaderboardEmpty: 'No scores submitted yet.',
+        leaderboardUnavailable: 'Set your Firebase Database URL (NUTRIGUESSER_LEADERBOARD_API_BASE_URL) before deploying.',
+        leaderboardSubmitSuccess: 'Score submitted!', leaderboardSubmitFailed: 'Could not submit the score. Please try again.',
+        leaderboardLoadFailed: 'Could not load the leaderboard.',
         soundOff: '🔇 Sound off', themeDark: '🌙 Dark Mode', themeLight: '☀️ Light Mode',
         switchLanguage: 'Switch language to Spanish', trophyAria: count => count > 0 ? `Trophies, ${count} new` : 'Trophies', archiveEyebrow: 'Your daily food challenges',
         archiveTitle: 'Past challenges', ingredientsArchive: '🧩 Ingredients Archive',
@@ -1347,6 +1488,14 @@
         newChallenge: 'Un nuevo reto de comida cada día', loadingChallenge: 'Cargando reto diario...',
         nextUnlocks: 'EL PRÓXIMO PRODUCTO SE DESBLOQUEA EN:', navMain: 'Navegación principal',
         navHowTo: 'Cómo jugar', navDaily: 'Diario', navArchive: 'Archivo', soundOn: '🔊 Sonido activado',
+        leaderboard: 'Clasificación', nicknamePlaceholder: 'Tu nombre / Nickname', submitLeaderboard: 'Enviar a la clasificación',
+        registeredOnlyFirst: 'Puntaje registrado (Solo 1er intento)', leaderboardTitle: day => `Clasificación · Día ${day}`,
+        leaderboardModes: 'Modo de clasificación', closeLeaderboard: 'Cerrar clasificación',
+        position: '#', player: 'Jugador', leaderboardLoading: 'Cargando clasificación…',
+        leaderboardEmpty: 'Todavía no hay puntuaciones.',
+        leaderboardUnavailable: 'Configura la URL de Firebase (NUTRIGUESSER_LEADERBOARD_API_BASE_URL) antes de publicar.',
+        leaderboardSubmitSuccess: '¡Puntuación enviada!', leaderboardSubmitFailed: 'No se pudo enviar la puntuación. Inténtalo de nuevo.',
+        leaderboardLoadFailed: 'No se pudo cargar la clasificación.',
         soundOff: '🔇 Sonido desactivado', themeDark: '🌙 Modo oscuro', themeLight: '☀️ Modo claro',
         switchLanguage: 'Cambiar idioma a inglés', trophyAria: count => count > 0 ? `Trofeos, ${count} nuevos` : 'Trofeos', archiveEyebrow: 'Tus retos diarios de comida',
         archiveTitle: 'Retos anteriores', ingredientsArchive: '🧩 Archivo de ingredientes',
@@ -1436,6 +1585,9 @@
       });
       document.querySelectorAll('[data-i18n-alt]').forEach(element => {
         element.setAttribute('alt', t(element.dataset.i18nAlt));
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        element.setAttribute('placeholder', t(element.dataset.i18nPlaceholder));
       });
       document.querySelector('nav.nav-links').setAttribute('aria-label', t('navMain'));
       const navLinks = document.querySelectorAll('.nav-links a');
@@ -2016,6 +2168,181 @@
       document.getElementById('percentile-chart').setAttribute('aria-label', t('scoreDistribution', score));
       resultEmojis = emojis;
       document.getElementById('share-status').innerText = '';
+      document.querySelector('#game-screen .content-panel').classList.add('results-layout');
+      updateLeaderboardRegistration(score);
+    }
+
+    function leaderboardAttemptKey(mode, dayNumber) {
+      return `leaderboard_attempt_${mode}_day_${dayNumber}`;
+    }
+
+    function leaderboardSubmissionKey(mode, dayNumber) {
+      return `leaderboard_submission_${mode}_day_${dayNumber}`;
+    }
+
+    function leaderboardResourceUrl(dayNumber) {
+      const baseUrl = LEADERBOARD_API_BASE_URL.trim().replace(/\/+$/, '');
+      if (!baseUrl) throw new Error(t('leaderboardUnavailable'));
+      if (!/^https:\/\//i.test(baseUrl)) throw new Error('Firebase Realtime Database URL must use HTTPS');
+      return `${baseUrl}/day_${dayNumber}_scores.json`;
+    }
+
+    function updateLeaderboardRegistration(score) {
+      const submitButton = document.getElementById('leaderboard-submit');
+      const nameInput = document.getElementById('leaderboard-name');
+      const registration = document.getElementById('leaderboard-registration');
+      const status = document.getElementById('leaderboard-registration-status');
+      const dayNumber = currentFood.dayNumber;
+      const previousSubmission = localStorage.getItem(leaderboardSubmissionKey(gameMode, dayNumber));
+      nameInput.value = localStorage.getItem('leaderboard_nickname') || '';
+      document.getElementById('leaderboard-form').dataset.score = String(score);
+      registration.hidden = !currentCanSubmitLeaderboard || Boolean(previousSubmission);
+      if (registration.hidden) {
+        status.textContent = '';
+        return;
+      }
+      submitButton.style.display = '';
+      submitButton.disabled = false;
+      status.textContent = '';
+    }
+
+    async function submitLeaderboardScore(event) {
+      event.preventDefault();
+      const dayNumber = currentFood.dayNumber;
+      const submissionKey = leaderboardSubmissionKey(gameMode, dayNumber);
+      const status = document.getElementById('leaderboard-registration-status');
+      const submitButton = document.getElementById('leaderboard-submit');
+      const name = document.getElementById('leaderboard-name').value.trim();
+      const score = Number(document.getElementById('leaderboard-form').dataset.score);
+      if (!currentCanSubmitLeaderboard || localStorage.getItem(submissionKey)) {
+        updateLeaderboardRegistration(score);
+        return;
+      }
+      if (!name || name.length > 15 || !Number.isInteger(score) || score < 0 || score > 500) {
+        status.textContent = t('leaderboardSubmitFailed');
+        return;
+      }
+
+      submitButton.disabled = true;
+      status.textContent = '';
+      const id = window.crypto && typeof window.crypto.randomUUID === 'function'
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const record = { id, name, score, mode: gameMode, dayNumber, submittedAt: new Date().toISOString() };
+      try {
+        const response = await fetch(leaderboardResourceUrl(dayNumber), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+        if (!response.ok) throw new Error(`Leaderboard API returned ${response.status}`);
+        localStorage.setItem(submissionKey, JSON.stringify(record));
+        localStorage.setItem('leaderboard_nickname', name);
+        const localKey = `leaderboard_local_day_${dayNumber}`;
+        const localScores = readStoredJSON(localKey, []);
+        if (!Array.isArray(localScores)) throw new Error(`Invalid local leaderboard data for day ${dayNumber}`);
+        localScores.push(record);
+        localStorage.setItem(localKey, JSON.stringify(localScores));
+        status.textContent = t('leaderboardSubmitSuccess');
+        submitButton.style.display = 'none';
+        if (document.getElementById('leaderboard-modal').open) await loadLeaderboard();
+      } catch (error) {
+        console.error('Unable to submit leaderboard score', error);
+        status.textContent = error instanceof Error && error.message === t('leaderboardUnavailable')
+          ? t('leaderboardUnavailable')
+          : t('leaderboardSubmitFailed');
+        submitButton.disabled = false;
+      }
+    }
+
+    function openLeaderboard() {
+      leaderboardMode = gameMode;
+      document.getElementById('ingredients-leaderboard-tab').setAttribute('aria-pressed', String(leaderboardMode === 'ingredients'));
+      document.getElementById('protein-leaderboard-tab').setAttribute('aria-pressed', String(leaderboardMode === 'protein'));
+      document.getElementById('leaderboard-modal').showModal();
+      loadLeaderboard();
+    }
+
+    function selectLeaderboardMode(mode) {
+      leaderboardMode = mode;
+      document.getElementById('ingredients-leaderboard-tab').setAttribute('aria-pressed', String(mode === 'ingredients'));
+      document.getElementById('protein-leaderboard-tab').setAttribute('aria-pressed', String(mode === 'protein'));
+      loadLeaderboard();
+    }
+
+    function renderLeaderboard(scores) {
+      const rows = document.getElementById('leaderboard-rows');
+      rows.replaceChildren();
+      if (!scores.length) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.className = 'leaderboard-empty';
+        cell.colSpan = 3;
+        cell.textContent = t('leaderboardEmpty');
+        row.appendChild(cell);
+        rows.appendChild(row);
+        return;
+      }
+      scores.forEach((score, index) => {
+        const row = document.createElement('tr');
+        const position = document.createElement('td');
+        const name = document.createElement('td');
+        const points = document.createElement('td');
+        position.textContent = `#${index + 1}`;
+        name.textContent = score.name;
+        points.textContent = `${score.score} PTS`;
+        row.append(position, name, points);
+        rows.appendChild(row);
+      });
+    }
+
+    async function loadLeaderboard() {
+      const generation = ++leaderboardLoadGeneration;
+      const dayNumber = getCurrentDayNumber();
+      const status = document.getElementById('leaderboard-load-status');
+      document.getElementById('leaderboard-title').textContent = t('leaderboardTitle', dayNumber);
+      status.textContent = t('leaderboardLoading');
+      document.getElementById('leaderboard-rows').replaceChildren();
+      try {
+        const response = await fetch(leaderboardResourceUrl(dayNumber));
+        if (!response.ok) throw new Error(`Leaderboard API returned ${response.status}`);
+        const payload = await response.json();
+        const remoteScores = payload === null
+          ? []
+          : Array.isArray(payload)
+            ? payload
+            : payload && Array.isArray(payload.scores)
+              ? payload.scores
+              : payload && typeof payload === 'object'
+                ? Object.entries(payload).map(([id, score]) => ({ id, ...score }))
+                : null;
+        if (!remoteScores) throw new Error('Firebase response must contain a score list');
+        const normalizedScores = remoteScores.map(score => {
+          const points = Number(score && score.score);
+          if (!score || typeof score.name !== 'string' || !score.name.trim() || score.name.length > 15
+            || !Number.isInteger(points) || points < 0 || points > 500
+            || !['ingredients', 'protein'].includes(score.mode)) {
+            throw new Error('Leaderboard API returned an invalid score record');
+          }
+          return { ...score, score: points };
+        });
+        const localScores = readStoredJSON(`leaderboard_local_day_${dayNumber}`, []);
+        if (!Array.isArray(localScores)) throw new Error(`Invalid local leaderboard data for day ${dayNumber}`);
+        const scoresById = new Map();
+        [...normalizedScores, ...localScores].filter(score => score.mode === leaderboardMode)
+          .forEach(score => scoresById.set(score.id || `${score.name}:${score.score}:${score.submittedAt}`, score));
+        const scores = [...scoresById.values()].sort((a, b) =>
+          b.score - a.score || String(a.submittedAt || '').localeCompare(String(b.submittedAt || '')));
+        if (generation !== leaderboardLoadGeneration) return;
+        renderLeaderboard(scores);
+        status.textContent = '';
+      } catch (error) {
+        if (generation !== leaderboardLoadGeneration) return;
+        console.error('Unable to load leaderboard', error);
+        status.textContent = error instanceof Error && error.message === t('leaderboardUnavailable')
+          ? t('leaderboardUnavailable')
+          : t('leaderboardLoadFailed');
+      }
     }
 
     async function shareResult() {
@@ -2125,9 +2452,19 @@ ${t('playNow')}`;
         console.error(`No ${gameMode} food available for day ${dayNumber}`);
         return false;
       }
+      const attemptKey = leaderboardAttemptKey(gameMode, dayNumber);
+      const existingScoreKey = `score_${gameMode}_day_${dayNumber}`;
+      const legacyScoreKey = gameMode === 'ingredients' ? `score_day_${dayNumber}` : null;
+      currentCanSubmitLeaderboard = localStorage.getItem(attemptKey) === null
+        && localStorage.getItem(leaderboardSubmissionKey(gameMode, dayNumber)) === null
+        && localStorage.getItem(existingScoreKey) === null
+        && (!legacyScoreKey || localStorage.getItem(legacyScoreKey) === null);
+      if (currentCanSubmitLeaderboard) localStorage.setItem(attemptKey, new Date().toISOString());
       resultEmojis = [];
       currentRankKey = '';
       currentTranslatedFood = { ...currentFood };
+      document.querySelector('#game-screen .content-panel').classList.remove('results-layout');
+      document.getElementById('leaderboard-registration').hidden = false;
       gameGeneration++;
       unlockRangeInputs();
       document.body.classList.remove('screen-shake');
@@ -2146,6 +2483,9 @@ ${t('playNow')}`;
 
       document.getElementById('score-summary').style.display = 'none';
       document.getElementById('share-status').innerText = '';
+      document.getElementById('leaderboard-registration-status').textContent = '';
+      document.getElementById('leaderboard-submit').style.display = '';
+      document.getElementById('leaderboard-submit').disabled = false;
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.style.display = 'block';
       submitBtn.disabled = false;
@@ -2565,6 +2905,17 @@ ${t('playNow')}`;
 
       updateCurrentDate();
     }
+
+    function resetProgressForTesting() {
+      const progressKeyPattern = /^(?:score_day_\d+|score_(?:ingredients|protein)_day_\d+|leaderboard_attempt_(?:ingredients|protein)_day_\d+|leaderboard_submission_(?:ingredients|protein)_day_\d+|daily_streak|last_daily_completed|archive_days_completed|user_trophies|seen_trophies|user_statistics)$/;
+      const progressKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index))
+        .filter(key => key && progressKeyPattern.test(key));
+      progressKeys.forEach(key => localStorage.removeItem(key));
+      console.info(`Reset ${progressKeys.length} local gameplay progress entries. Remote leaderboard scores and preferences were preserved.`);
+      window.location.reload();
+    }
+
+    window.resetProgressForTesting = resetProgressForTesting;
 
     loadTranslationCache();
     initializeTrophies();
